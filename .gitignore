@@ -1,0 +1,9 @@
+# Généré par tools/build.mjs (Netlify le reconstruit à chaque déploiement)
+dist/
+
+# Fichiers locaux
+.claude/
+.env
+*.bak
+node_modules/
+.netlify/

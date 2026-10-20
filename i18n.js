@@ -1,0 +1,432 @@
+/*
+ * Traductions FR / EN.
+ * Dans le HTML : data-i18n="clé" remplace le texte,
+ * data-i18n-attr="placeholder:clé;aria-label:clé" remplace des attributs.
+ * La langue est mémorisée et partagée entre l'accueil et les pages projet.
+ */
+(() => {
+    const dictionary = {
+        fr: {
+            "skip": "Aller au contenu",
+            "menu.open": "Ouvrir le menu",
+            "nav.projects": "Projets",
+            "nav.journey": "Parcours",
+            "nav.expertise": "Expertise",
+            "nav.certs": "Certifications",
+            "nav.contact": "Me contacter",
+            "nav.lang": "Choisir la langue",
+            "theme.toggle": "Changer de thème",
+            "meta.description": "Portfolio d'Amine AIT ALI, élève-ingénieur en ingénierie des données : Data Engineering, Cloud, IA générative et systèmes LLM.",
+
+            "hero.title": "Je construis les systèmes qui transforment la data brute en décisions et produits IA.",
+            "hero.lead": "Élève-ingénieur Data & IA à l'ENSA Khouribga. Je conçois des pipelines batch et temps réel, des lakehouses et des produits IA prêts à l'emploi : de l'ingestion et la qualité jusqu'aux APIs, systèmes RAG et agents.",
+            "hero.cta.projects": "Voir mes projets",
+            "hero.cta.cv": "Télécharger mon CV",
+            "hero.cta.github": "GitHub",
+            "hero.portrait": "Amine AIT ALI lors d'une prise de parole",
+            "hero.location": "Casablanca, Maroc",
+            "hero.available": "Ouvert aux opportunités Data & IA",
+            "hero.path.label": "Le chemin d'une donnée dans mes projets",
+            "hero.path.1": "Capter",
+            "hero.path.1s": "API, CDC, WebSocket",
+            "hero.path.2": "Fiabiliser",
+            "hero.path.2s": "Tests, qualité, SCD",
+            "hero.path.3": "Modéliser",
+            "hero.path.3s": "Lakehouse, étoile",
+            "hero.path.4": "Servir",
+            "hero.path.4s": "BI, API, agents",
+            "stats.repos": "dépôts publics",
+            "stats.certs": "certifications",
+            "stats.xp": "expériences en entreprise",
+
+            "projects.title": "Projets",
+            "projects.lead": "Chaque projet s'ouvre sur une page qui explique le problème, ce que j'ai construit et ce que ça donne, schéma à l'appui.",
+            "projects.filter": "Filtrer les projets",
+            "projects.all": "Tous",
+            "projects.featured": "Études de cas",
+            "projects.others": "Autres projets",
+            "projects.empty": "Aucun projet ne correspond à cette recherche.",
+            "projects.open": "Lire l'étude de cas",
+            "projects.code": "Code",
+            "projects.new": "Nouveau",
+            "projects.updated": "Mis à jour",
+            "projects.pinned": "Épinglé sur GitHub",
+            "projects.cloud": "Réalisé dans le cloud",
+            "projects.post": "Post LinkedIn",
+            "cat.data": "Data engineering",
+            "cat.ai": "IA & GenAI",
+            "cat.cloud": "Cloud",
+            "cat.apps": "Applications",
+            "group.data": "Data engineering & Cloud",
+            "group.data.lead": "Pipelines batch et temps réel, lakehouses, orchestration et infrastructure cloud.",
+            "group.ai": "IA & Machine Learning",
+            "group.ai.lead": "Agents, RAG, vision, détection d'anomalies et applications LLM.",
+            "group.software": "Software",
+            "group.software.lead": "Applications web, mobile et desktop.",
+            "projects.search": "Kafka, Azure, RAG…",
+            "projects.search.label": "Rechercher un projet",
+            "p.prevImage": "Image précédente",
+            "ai.open": "Demander à l'IA",
+            "ai.title": "Assistant du portfolio",
+            "ai.subtitle": "Répond à partir de mon CV et de mes dépôts GitHub.",
+            "ai.reset": "Nouvelle conversation",
+            "ai.close": "Fermer l'assistant",
+            "ai.label": "Votre question",
+            "ai.placeholder": "Posez une question sur mon parcours ou mes projets…",
+            "ai.send": "Envoyer",
+            "ai.note": "Réponses générées par IA à partir de mes documents : elles peuvent contenir des erreurs.",
+            "ai.empty": "Bonjour ! Je connais le CV d'Amine, ses expériences, ses certifications et le contenu de ses dépôts. Par exemple :",
+            "ai.sources": "Sources",
+            "ai.error": "L'assistant n'est pas disponible pour le moment. Réessayez, ou écrivez directement à amineaitalioff.pro@gmail.com.",
+            "ai.limit": "Beaucoup de questions d'un coup : attendez une minute avant la suivante.",
+            "p.nextImage": "Image suivante",
+
+            "expertise.title": "Ce que je sais faire",
+            "expertise.lead": "Je relie infrastructure, données et IA pour livrer des systèmes compréhensibles, testés et prêts à évoluer.",
+            "exp.data": "Data engineering",
+            "exp.data.p": "Pipelines batch et streaming, CDC, ETL/ELT, qualité, modélisation dimensionnelle et orchestration.",
+            "exp.cloud": "Cloud & lakehouse",
+            "exp.cloud.p": "Architectures Medallion, services managés Azure et AWS, conteneurs et infrastructure as code.",
+            "exp.ai": "AI engineering",
+            "exp.ai.p": "LLM, RAG, agents, MCP et APIs d'inférence pensées pour un usage réel.",
+            "exp.ml": "Machine learning",
+            "exp.ml.p": "Vision, détection d'anomalies, modèles de graphe, évaluation et explicabilité.",
+            "exp.bi": "Analytics & BI",
+            "exp.bi.p": "Exploration, statistiques appliquées, KPIs et tableaux de bord décisionnels.",
+            "exp.ops": "Exploitation",
+            "exp.ops.p": "Observabilité, tests, CI/CD, Linux et méthodes agiles pour des systèmes qui tiennent.",
+
+            "journey.title": "Parcours",
+            "journey.lead": "Une progression centrée sur les plateformes data, le cloud et l'industrialisation des modèles génératifs.",
+            "journey.linkedin": "Voir le profil LinkedIn",
+            "job.1.date": "Juil. – sept. 2026",
+            "job.1.type": "PFA en entreprise",
+            "job.1.title": "Plateforme LLMaaS",
+            "job.1.text": "Conception d'une plateforme LLMaaS : déploiement de plusieurs LLM sur GPU avec Kubernetes et vLLM, cycle de vie des modèles (promotion, rollback) via GitLab CI/CD, autoscaling multi-signal (file d'attente, TTFT, KV cache), benchmarks multi-modèles et tarification FinOps par million de tokens.",
+            "job.2.date": "Juin – août 2025",
+            "job.2.type": "Stage",
+            "job.2.title": "Pipelines data cloud",
+            "job.2.text": "Conception et orchestration de pipelines ETL/ELT sur Azure, architecture Data Lake / Lakehouse et traitements distribués.",
+            "job.3.date": "Depuis oct. 2023",
+            "job.3.type": "Formation",
+            "job.3.title": "Diplôme d'ingénieur d'État",
+            "job.3.text": "Génie de l'information et ingénierie des données : Big Data, Cloud, ML, BI, systèmes et réseaux.",
+            "job.4.date": "Juin 2024 – mars 2025",
+            "job.4.type": "Programme",
+            "job.4.org": "1337 Khouribga, réseau 42",
+            "job.4.title": "Développement & algorithmique",
+            "job.4.text": "Apprentissage entre pairs, programmation orientée objet, Java/JEE, JavaScript et design patterns.",
+
+            "certs.title": "Certifications",
+            "certs.lead": "Une pratique continue autour du SQL, de Python, du machine learning, de l'IA générative et du cloud. Cliquez sur une certification pour la voir en grand.",
+            "certs.filter": "Filtrer les certifications",
+            "certs.more": "Afficher les {n} certifications",
+            "certs.less": "Afficher moins",
+            "certs.view": "Voir la certification",
+            "certs.issued": "Obtenue le",
+            "certs.duration": "Durée",
+            "certs.hours": "{n} h",
+            "certs.skills": "Compétences",
+            "certs.used": "Mise en pratique dans",
+            "certs.verify": "Vérifier en ligne",
+            "certs.lowres": "Le fichier d'origine est trop petit pour être lisible : voici une fiche récapitulative.",
+            "certs.course": "Cours certifiant",
+            "certs.certification": "Certification",
+            "certs.close": "Fermer",
+            "certs.prev": "Certification précédente",
+            "certs.next": "Certification suivante",
+            "certcat.data": "Data & SQL",
+            "certcat.ai": "IA & ML",
+            "certcat.cloud": "Cloud",
+            "certcat.dev": "Développement",
+
+            "contact.title": "Parlons de votre projet data.",
+            "contact.lead": "Stage, poste, collaboration ou simple question technique : écrivez-moi, je vous réponds à l’adresse indiquée.",
+            "contact.copy": "Copier",
+            "contact.copied": "Adresse copiée",
+            "contact.phone": "Téléphone",
+            "contact.location": "Localisation",
+            "contact.cv": "CV",
+            "contact.cv.value": "Télécharger le PDF",
+            "form.title": "Écrivez-moi",
+            "form.email": "Votre adresse email",
+            "form.email.ph": "vous@entreprise.com",
+            "form.email.help": "Utilisée uniquement pour vous répondre.",
+            "form.subject": "Objet",
+            "form.subject.ph": "Ex. Stage en data engineering",
+            "form.message": "Votre message",
+            "form.message.ph": "Bonjour Amine, je vous contacte au sujet de…",
+            "form.chars": "caractères",
+            "form.send": "Envoyer le message",
+            "form.sending": "Envoi en cours…",
+            "form.success": "Message envoyé. Je vous réponds à l'adresse indiquée.",
+            "form.error": "Le message n'est pas parti. Réessayez, ou écrivez directement à l'adresse ci-contre.",
+            "form.company": "Entreprise",
+
+            "footer.top": "Retour en haut",
+            "footer.rights": "Portfolio professionnel.",
+
+            "p.back": "Tous les projets",
+            "p.problem": "Le problème",
+            "p.built": "Ce que j'ai construit",
+            "p.flow": "Architecture du projet",
+            "p.watch": "En parallèle",
+            "p.numbers": "En chiffres",
+            "p.stack": "Stack",
+            "p.gallery": "Captures et schémas du dépôt",
+            "p.gallery.cloud": "Captures et schémas publiés avec le projet",
+            "p.code": "Voir le code sur GitHub",
+            "p.post": "Voir le post LinkedIn",
+            "p.next": "Projet suivant",
+            "p.prev": "Projet précédent",
+            "p.notfound": "Ce projet n'existe pas ou a changé d'adresse.",
+            "p.zoom": "Agrandir l'image",
+            "p.updated": "Dernière mise à jour",
+            "p.source.github": "Dépôt public",
+            "p.source.cloud": "Projet cloud, sans dépôt"
+        },
+        en: {
+            "skip": "Skip to content",
+            "menu.open": "Open menu",
+            "nav.projects": "Projects",
+            "nav.journey": "Journey",
+            "nav.expertise": "Skills",
+            "nav.certs": "Certifications",
+            "nav.contact": "Contact me",
+            "nav.lang": "Choose language",
+            "theme.toggle": "Switch theme",
+            "meta.description": "Portfolio of Amine AIT ALI, data engineering student: Data Engineering, Cloud, generative AI and LLM systems.",
+
+            "hero.title": "I build the systems that turn raw data into decisions and AI products.",
+            "hero.lead": "Data & AI engineering student at ENSA Khouribga. I design batch and real-time pipelines, lakehouses and ready-to-use AI products: from ingestion and quality to APIs, RAG systems and agents.",
+            "hero.cta.projects": "See my projects",
+            "hero.cta.cv": "Download my CV",
+            "hero.cta.github": "GitHub",
+            "hero.portrait": "Amine AIT ALI speaking at an event",
+            "hero.location": "Casablanca, Morocco",
+            "hero.available": "Open to Data & AI opportunities",
+            "hero.path.label": "The path data takes in my projects",
+            "hero.path.1": "Capture",
+            "hero.path.1s": "API, CDC, WebSocket",
+            "hero.path.2": "Make reliable",
+            "hero.path.2s": "Tests, quality, SCD",
+            "hero.path.3": "Model",
+            "hero.path.3s": "Lakehouse, star",
+            "hero.path.4": "Serve",
+            "hero.path.4s": "BI, APIs, agents",
+            "stats.repos": "public repositories",
+            "stats.certs": "certifications",
+            "stats.xp": "industry experiences",
+
+            "projects.title": "Projects",
+            "projects.lead": "Each project opens a page explaining the problem, what I built and how it turned out, with a diagram.",
+            "projects.filter": "Filter projects",
+            "projects.all": "All",
+            "projects.featured": "Case studies",
+            "projects.others": "More projects",
+            "projects.empty": "No project matches this search.",
+            "projects.open": "Read the case study",
+            "projects.code": "Code",
+            "projects.new": "New",
+            "projects.updated": "Updated",
+            "projects.pinned": "Pinned on GitHub",
+            "projects.cloud": "Built in the cloud",
+            "projects.post": "LinkedIn post",
+            "cat.data": "Data engineering",
+            "cat.ai": "AI & GenAI",
+            "cat.cloud": "Cloud",
+            "cat.apps": "Applications",
+            "group.data": "Data engineering & Cloud",
+            "group.data.lead": "Batch and real-time pipelines, lakehouses, orchestration and cloud infrastructure.",
+            "group.ai": "AI & Machine Learning",
+            "group.ai.lead": "Agents, RAG, vision, anomaly detection and LLM applications.",
+            "group.software": "Software",
+            "group.software.lead": "Web, mobile and desktop applications.",
+            "projects.search": "Kafka, Azure, RAG…",
+            "projects.search.label": "Search projects",
+            "p.prevImage": "Previous image",
+            "ai.open": "Ask the AI",
+            "ai.title": "Portfolio assistant",
+            "ai.subtitle": "Answers from my CV and my GitHub repositories.",
+            "ai.reset": "New conversation",
+            "ai.close": "Close the assistant",
+            "ai.label": "Your question",
+            "ai.placeholder": "Ask about my background or projects…",
+            "ai.send": "Send",
+            "ai.note": "AI-generated answers based on my documents: they may contain mistakes.",
+            "ai.empty": "Hi! I know Amine's CV, experience, certifications and the content of his repositories. For example:",
+            "ai.sources": "Sources",
+            "ai.error": "The assistant isn't available right now. Try again, or write directly to amineaitalioff.pro@gmail.com.",
+            "ai.limit": "Lots of questions at once: wait a minute before the next one.",
+            "p.nextImage": "Next image",
+
+            "expertise.title": "What I do",
+            "expertise.lead": "I connect infrastructure, data and AI to ship systems that are understandable, tested and ready to grow.",
+            "exp.data": "Data engineering",
+            "exp.data.p": "Batch and streaming pipelines, CDC, ETL/ELT, data quality, dimensional modelling and orchestration.",
+            "exp.cloud": "Cloud & lakehouse",
+            "exp.cloud.p": "Medallion architectures, Azure and AWS managed services, containers and infrastructure as code.",
+            "exp.ai": "AI engineering",
+            "exp.ai.p": "LLMs, RAG, agents, MCP and inference APIs built for real use.",
+            "exp.ml": "Machine learning",
+            "exp.ml.p": "Vision, anomaly detection, graph models, evaluation and explainability.",
+            "exp.bi": "Analytics & BI",
+            "exp.bi.p": "Exploration, applied statistics, KPIs and decision dashboards.",
+            "exp.ops": "Operations",
+            "exp.ops.p": "Observability, testing, CI/CD, Linux and agile methods for systems that hold up.",
+
+            "journey.title": "Journey",
+            "journey.lead": "A path focused on data platforms, the cloud and putting generative models into production.",
+            "journey.linkedin": "View LinkedIn profile",
+            "job.1.date": "Jul. – Sep. 2026",
+            "job.1.type": "End-of-year project",
+            "job.1.title": "LLMaaS platform",
+            "job.1.text": "Design of an LLMaaS platform: multiple LLMs deployed on GPUs with Kubernetes and vLLM, model lifecycle (promotion, rollback) through GitLab CI/CD, multi-signal autoscaling (queue, TTFT, KV cache), multi-model benchmarks and FinOps pricing per million tokens.",
+            "job.2.date": "Jun. – Aug. 2025",
+            "job.2.type": "Internship",
+            "job.2.title": "Cloud data pipelines",
+            "job.2.text": "Design and orchestration of ETL/ELT pipelines on Azure, Data Lake / Lakehouse architecture and distributed processing.",
+            "job.3.date": "Since Oct. 2023",
+            "job.3.type": "Education",
+            "job.3.title": "State engineering degree",
+            "job.3.text": "Information and data engineering: Big Data, Cloud, ML, BI, systems and networks.",
+            "job.4.date": "Jun. 2024 – Mar. 2025",
+            "job.4.type": "Program",
+            "job.4.org": "1337 Khouribga, 42 Network",
+            "job.4.title": "Software development & algorithms",
+            "job.4.text": "Peer learning, object-oriented programming, Java/JEE, JavaScript and design patterns.",
+
+            "certs.title": "Certifications",
+            "certs.lead": "Continuous practice in SQL, Python, machine learning, generative AI and the cloud. Click a certification to see it full size.",
+            "certs.filter": "Filter certifications",
+            "certs.more": "Show all {n} certifications",
+            "certs.less": "Show fewer",
+            "certs.view": "View certification",
+            "certs.issued": "Earned on",
+            "certs.duration": "Duration",
+            "certs.hours": "{n} h",
+            "certs.skills": "Skills",
+            "certs.used": "Put into practice in",
+            "certs.verify": "Verify online",
+            "certs.lowres": "The original file is too small to read, so here is a summary card.",
+            "certs.course": "Certified course",
+            "certs.certification": "Certification",
+            "certs.close": "Close",
+            "certs.prev": "Previous certification",
+            "certs.next": "Next certification",
+            "certcat.data": "Data & SQL",
+            "certcat.ai": "AI & ML",
+            "certcat.cloud": "Cloud",
+            "certcat.dev": "Development",
+
+            "contact.title": "Let's talk about your data project.",
+            "contact.lead": "Internship, job, collaboration or a quick technical question: write to me and I will get back to you.",
+            "contact.copy": "Copy",
+            "contact.copied": "Address copied",
+            "contact.phone": "Phone",
+            "contact.location": "Location",
+            "contact.cv": "CV",
+            "contact.cv.value": "Download the PDF",
+            "form.title": "Write to me",
+            "form.email": "Your email address",
+            "form.email.ph": "you@company.com",
+            "form.email.help": "Used only to reply to you.",
+            "form.subject": "Subject",
+            "form.subject.ph": "E.g. Data engineering internship",
+            "form.message": "Your message",
+            "form.message.ph": "Hello Amine, I'm reaching out about…",
+            "form.chars": "characters",
+            "form.send": "Send message",
+            "form.sending": "Sending…",
+            "form.success": "Message sent. I'll reply to the address you gave.",
+            "form.error": "The message wasn't sent. Try again, or write directly to the address shown.",
+            "form.company": "Company",
+
+            "footer.top": "Back to top",
+            "footer.rights": "Professional portfolio.",
+
+            "p.back": "All projects",
+            "p.problem": "The problem",
+            "p.built": "What I built",
+            "p.flow": "Project architecture",
+            "p.watch": "Alongside",
+            "p.numbers": "In numbers",
+            "p.stack": "Stack",
+            "p.gallery": "Screenshots and diagrams from the repository",
+            "p.gallery.cloud": "Screenshots and diagrams shared with the project",
+            "p.code": "See the code on GitHub",
+            "p.post": "See the LinkedIn post",
+            "p.next": "Next project",
+            "p.prev": "Previous project",
+            "p.notfound": "This project doesn't exist or has moved.",
+            "p.zoom": "Enlarge image",
+            "p.updated": "Last updated",
+            "p.source.github": "Public repository",
+            "p.source.cloud": "Cloud project, no repository"
+        }
+    };
+
+    const STORAGE_KEY = "portfolio-language";
+    const listeners = [];
+
+    function initialLanguage() {
+        const fromUrl = new URLSearchParams(location.search).get("lang");
+        if (fromUrl === "fr" || fromUrl === "en") return fromUrl;
+        try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored === "fr" || stored === "en") return stored;
+        } catch (_) { /* stockage indisponible */ }
+        return (navigator.language || "fr").toLowerCase().startsWith("fr") ? "fr" : "en";
+    }
+
+    let language = initialLanguage();
+
+    function t(key, vars) {
+        let value = dictionary[language][key] ?? dictionary.fr[key] ?? key;
+        if (vars) Object.entries(vars).forEach(([name, v]) => { value = value.replace(`{${name}}`, v); });
+        return value;
+    }
+
+    /* Choisit la bonne langue dans un objet { fr, en } ou renvoie la chaîne telle quelle. */
+    function pick(value) {
+        if (value && typeof value === "object" && !Array.isArray(value)) return value[language] ?? value.fr;
+        return value;
+    }
+
+    function apply(root = document) {
+        document.documentElement.lang = language;
+        root.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+        root.querySelectorAll("[data-i18n-attr]").forEach((el) => {
+            el.dataset.i18nAttr.split(";").forEach((pair) => {
+                const [attr, key] = pair.split(":").map((s) => s.trim());
+                if (attr && key) el.setAttribute(attr, t(key));
+            });
+        });
+        document.querySelectorAll("[data-language]").forEach((button) => {
+            const active = button.dataset.language === language;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-pressed", String(active));
+        });
+    }
+
+    function setLanguage(next) {
+        language = next === "en" ? "en" : "fr";
+        try { localStorage.setItem(STORAGE_KEY, language); } catch (_) { /* rien */ }
+        apply();
+        listeners.forEach((fn) => fn(language));
+    }
+
+    document.addEventListener("click", (event) => {
+        const button = event.target.closest("[data-language]");
+        if (button) setLanguage(button.dataset.language);
+    });
+
+    window.i18n = {
+        t,
+        pick,
+        apply,
+        setLanguage,
+        get language() { return language; },
+        onChange: (fn) => listeners.push(fn)
+    };
+})();

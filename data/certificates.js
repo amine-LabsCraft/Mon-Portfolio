@@ -1,0 +1,42 @@
+/*
+ * Certifications.
+ * width / height = taille réelle du fichier image. Le site ne l'agrandit jamais au-delà
+ * pour rester net. Sous 700 px de large, l'image est trop petite pour être lisible :
+ * le site affiche alors une fiche générée à la place.
+ * url : lien de vérification public (DataCamp, Coursera, Credly…), à compléter si disponible.
+ * Affichage : du plus récent au plus ancien.
+ */
+window.PORTFOLIO_CERTIFICATES = [
+    { id: "spark-databricks", title: "Data Transformation with Spark SQL in Databricks", issuer: "DataCamp", date: "2026-09-26", hours: 3, category: "data", file: "certs/spark-databricks.webp", width: 1491, height: 828, skills: ["Spark SQL", "Databricks", "Delta Lake"], projects: ["walmart-streaming-flow", "walmart-lakehouse"] },
+    { id: "azure", title: "Understanding Microsoft Azure", issuer: "DataCamp", date: "2026-09-22", hours: 3, category: "cloud", file: "certs/azure.webp", width: 1383, height: 797, skills: ["Azure", "Cloud"], projects: ["synapse-lakehouse", "adf-pipeline", "terraform-azure", "uber-streaming"] },
+    { id: "apis-python", title: "Introduction to APIs in Python", issuer: "DataCamp", date: "2026-06-29", hours: 2, category: "dev", file: "certs/apis-python.webp", width: 1583, height: 907, skills: ["REST", "requests", "Python"], projects: ["cryptopulse"] },
+    { id: "mongodb", title: "Introduction to MongoDB in Python", issuer: "DataCamp", date: "2026-06-28", hours: 3, category: "data", file: "certs/mongodb.webp", width: 1452, height: 824, skills: ["MongoDB", "NoSQL", "Python"], projects: ["cryptopulse"] },
+    { id: "preprocessing-ml", title: "Preprocessing for Machine Learning in Python", issuer: "DataCamp", date: "2026-01-27", hours: 4, category: "ai", file: "certs/preprocessing-ml.webp", width: 1501, height: 837, skills: ["Feature engineering", "scikit-learn"], projects: ["fraud-telecom", "data-preprocessing-lab"] },
+    { id: "pandas", title: "Data Manipulation with pandas", issuer: "DataCamp", date: "2026-01-27", hours: 4, category: "data", file: "certs/pandas.webp", width: 1502, height: 836, skills: ["pandas"], projects: ["olist-audit", "ai-data-agent"] },
+    { id: "matplotlib", title: "Introduction to Data Visualization with Matplotlib", issuer: "DataCamp", date: "2026-01-27", hours: 4, category: "data", file: "certs/matplotlib.webp", width: 1497, height: 833, skills: ["Matplotlib", "Data viz"], projects: ["olist-audit"] },
+    { id: "rag-langchain", title: "Retrieval Augmented Generation (RAG) with LangChain", issuer: "DataCamp", date: "2025-11-16", hours: 3, category: "ai", file: "certs/rag-langchain.webp", width: 1498, height: 840, skills: ["RAG", "LangChain"], projects: ["rag-agentic", "mcp-rag-server", "customer-support"] },
+    { id: "python-oop", title: "Object-Oriented Programming in Python", issuer: "DataCamp", date: "2025-11-09", hours: 4, category: "dev", file: "certs/python-oop.webp", width: 1510, height: 842, skills: ["OOP", "Python"] },
+    { id: "agentic-ai", title: "Intro to AI Agents and Agentic AI", issuer: "365 Data Science", category: "ai", file: "certs/agentic-ai.webp", width: 1431, height: 906, skills: ["AI agents", "Agentic AI"], projects: ["ai-data-agent", "ai-trader"] },
+    { id: "git", title: "Introduction to Git", issuer: "DataCamp", date: "2025-10-08", hours: 2, category: "dev", file: "certs/git.webp", width: 900, height: 518, skills: ["Git", "Versioning"] },
+    { id: "ms-genai", title: "Présentation des concepts de l'IA générative", titleEn: "Introduction to generative AI concepts", issuer: "Microsoft", date: "2025-09-20", category: "ai", file: "certs/ms-genai.webp", width: 1178, height: 703, skills: ["GenAI", "Azure AI"] },
+    { id: "genai-concepts", title: "Generative AI Concepts", issuer: "DataCamp", date: "2025-09-19", hours: 2, category: "ai", file: "certs/genai-concepts.webp", width: 900, height: 514, skills: ["LLM", "GenAI"] },
+    { id: "data-science-intro", title: "Introduction to Data Science", issuer: "Cisco Networking Academy", date: "2025-09-10", category: "data", file: "certs/data-science-intro.webp", width: 1061, height: 711, skills: ["Data Science"] },
+    { id: "java-intro", title: "Introduction to Java", issuer: "DataCamp", date: "2025-09-05", hours: 4, category: "dev", file: "certs/java-intro.webp", width: 1496, height: 833, skills: ["Java"] },
+    { id: "sql-manipulation", title: "Data Manipulation in SQL", issuer: "DataCamp", date: "2025-09-04", hours: 4, category: "data", file: "certs/sql-manipulation.webp", width: 1496, height: 833, skills: ["SQL", "Window functions"] },
+    { id: "sql-joining", title: "Joining Data in SQL", issuer: "DataCamp", date: "2025-08-30", hours: 4, category: "data", file: "certs/sql-joining.webp", width: 1493, height: 837, skills: ["SQL", "Joins"] },
+    { id: "sql-intermediate", title: "Intermediate SQL", issuer: "DataCamp", date: "2025-08-26", hours: 4, category: "data", file: "certs/sql-intermediate.webp", width: 1498, height: 832, skills: ["SQL", "Aggregations"] },
+    { id: "sql-intro", title: "Introduction to SQL", issuer: "DataCamp", date: "2025-08-21", hours: 2, category: "data", file: "certs/sql-intro.webp", width: 1495, height: 837, skills: ["SQL"] },
+    { id: "hugging-face", title: "Working with Hugging Face", issuer: "DataCamp", date: "2025-08-02", hours: 2, category: "ai", file: "certs/hugging-face.webp", width: 1497, height: 835, skills: ["Transformers", "Hugging Face"], projects: ["customer-support"] },
+    { id: "unsupervised-learning", title: "Unsupervised Learning in Python", issuer: "DataCamp", date: "2025-06-25", hours: 4, category: "ai", file: "certs/unsupervised-learning.webp", width: 1495, height: 832, skills: ["Clustering", "PCA"], projects: ["fraud-telecom"] },
+    { id: "supervised-learning", title: "Supervised Learning with scikit-learn", issuer: "DataCamp", date: "2025-06-20", hours: 4, category: "ai", file: "certs/supervised-learning.webp", width: 1492, height: 835, skills: ["Classification", "Regression"], projects: ["fraud-telecom"] },
+    { id: "ai-fundamentals", title: "AI Fundamentals", issuer: "DataCamp", date: "2025-06-17", category: "ai", certification: true, file: "certs/ai-fundamentals.webp", width: 1442, height: 826, skills: ["AI", "ML", "Ethics"] },
+    { id: "ibm-transformers", title: "Generative AI Language Modeling with Transformers", issuer: "IBM · Coursera", date: "2025-02-16", category: "ai", file: "certs/ibm-transformers.webp", width: 1207, height: 817, skills: ["Transformers", "NLP", "PyTorch"] },
+    { id: "google-data-foundations", title: "Foundations: Data, Data, Everywhere", issuer: "Google · Coursera", date: "2025-02-16", category: "data", file: "certs/google-data-foundations.webp", width: 1200, height: 822, skills: ["Data analytics", "Data lifecycle"] },
+    { id: "ibm-dataviz", title: "Data Visualization with Python", issuer: "IBM · Coursera", date: "2025-02-15", category: "data", file: "certs/ibm-dataviz.webp", width: 1207, height: 817, skills: ["Matplotlib", "Seaborn", "Folium"] },
+    { id: "python-functions", title: "Introduction to Python Functions", issuer: "University of Colorado Boulder · Coursera", date: "2025-01-25", category: "dev", file: "certs/python-functions.webp", width: 1210, height: 822, skills: ["Python", "Functions"] },
+    { id: "python-crash-course", title: "Crash Course on Python", issuer: "Google · Coursera", date: "2025-01-23", category: "dev", file: "certs/python-crash-course.webp", width: 1243, height: 822, skills: ["Python"] },
+    { id: "matlab", title: "Introduction to Programming with MATLAB", issuer: "Vanderbilt University · Coursera", date: "2025-01-21", category: "dev", file: "certs/matlab.webp", width: 1236, height: 817, skills: ["MATLAB"] },
+    { id: "python-data-structures", title: "Python Data Structures", issuer: "University of Michigan · Coursera", date: "2024-10-04", category: "dev", file: "certs/python-data-structures.webp", width: 1193, height: 821, skills: ["Python", "Data structures"] },
+    { id: "python-everybody", title: "Programming for Everybody (Getting Started with Python)", issuer: "University of Michigan · Coursera", date: "2024-10-03", category: "dev", file: "certs/python-everybody.webp", width: 1217, height: 822, skills: ["Python"] },
+    { id: "python-basics", title: "Python Basics", issuer: "University of Michigan · Coursera", date: "2024-10-01", category: "dev", file: "certs/python-basics.webp", width: 1236, height: 822, skills: ["Python"] }
+];

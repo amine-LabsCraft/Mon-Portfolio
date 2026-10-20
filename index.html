@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Amine AIT ALI — Data & AI Engineer</title>
+    <meta name="description" content="Portfolio d'Amine AIT ALI, élève-ingénieur en ingénierie des données : Data Engineering, Cloud, IA générative et systèmes LLM." data-i18n-attr="content:meta.description">
+    <meta name="theme-color" content="#2456e8">
+    <meta property="og:title" content="Amine AIT ALI — Data & AI Engineer">
+    <meta property="og:description" content="Pipelines data, lakehouses et produits IA, du prototype au déploiement.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="images/Mon%20Image.jpg">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <script>
+        try { const s = localStorage.getItem("portfolio-theme"); document.documentElement.dataset.theme = s || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); } catch (_) { document.documentElement.dataset.theme = "light"; }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,650;12..96,750&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=14">
+</head>
+<body>
+    <div class="scroll-progress" aria-hidden="true"></div>
+    <a class="skip-link" href="#contenu" data-i18n="skip">Aller au contenu</a>
+
+    <header class="site-header">
+        <nav class="nav shell" aria-label="Navigation">
+            <a class="brand" href="#top" aria-label="Amine AIT ALI">
+                <span class="brand-mark" aria-hidden="true">AA</span>
+                <span class="brand-name">Amine AIT ALI</span>
+            </a>
+            <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attr="aria-label:menu.open"><span></span><span></span></button>
+            <div class="nav-links" id="nav-links">
+                <a href="#expertise" data-i18n="nav.expertise">Expertise</a>
+                <a href="#projets" data-i18n="nav.projects">Projets</a>
+                <a href="#parcours" data-i18n="nav.journey">Parcours</a>
+                <a href="#certifications" data-i18n="nav.certs">Certifications</a>
+                <div class="nav-tools">
+                    <div class="lang-switch" role="group" data-i18n-attr="aria-label:nav.lang">
+                        <button type="button" data-language="fr" aria-pressed="true">FR</button>
+                        <button type="button" data-language="en" aria-pressed="false">EN</button>
+                    </div>
+                    <button class="theme-toggle" type="button" data-i18n-attr="aria-label:theme.toggle;title:theme.toggle">
+                        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>
+                        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                    </button>
+                </div>
+                <a class="nav-cta" href="#contact" data-i18n="nav.contact">Me contacter</a>
+            </div>
+        </nav>
+    </header>
+
+    <main id="contenu">
+        <section class="hero" id="top">
+            <div class="shell hero-grid">
+                <div class="hero-copy">
+                    <p class="availability"><span class="status-dot" aria-hidden="true"></span><span data-i18n="hero.available">Ouvert aux opportunités Data &amp; IA</span></p>
+                    <h1 data-i18n="hero.title">Je construis les systèmes qui transforment la data brute en décisions et produits IA.</h1>
+                    <p class="hero-lead" data-i18n="hero.lead">Élève-ingénieur Data & IA à l'ENSA Khouribga.</p>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#projets" data-i18n="hero.cta.projects">Voir mes projets</a>
+                        <a class="button button-ghost" href="CV___Amine_AIT%20ALI%20.pdf" download="CV-Amine-AIT-ALI.pdf" data-i18n="hero.cta.cv">Télécharger mon CV</a>
+                        <a class="button button-ghost" href="https://github.com/amine-LabsCraft" target="_blank" rel="noreferrer" data-i18n="hero.cta.github">GitHub</a>
+                    </div>
+                </div>
+                <figure class="portrait">
+                    <img src="images/Mon%20Image.jpg" width="800" height="533" alt="" data-i18n-attr="alt:hero.portrait">
+                    <figcaption><span>Data & AI Engineer</span><span data-i18n="hero.location">Casablanca, Maroc</span></figcaption>
+                </figure>
+            </div>
+
+            <div class="shell">
+                <dl class="stats">
+                    <div><dt id="stat-repos">22</dt><dd data-i18n="stats.repos">dépôts publics</dd></div>
+                    <div><dt id="stat-certs">25</dt><dd data-i18n="stats.certs">certifications</dd></div>
+                    <div><dt>2</dt><dd data-i18n="stats.xp">expériences en entreprise</dd></div>
+                </dl>
+            </div>
+        </section>
+
+        <section class="section" id="expertise">
+            <div class="shell">
+                <div class="section-head">
+                    <h2 data-i18n="expertise.title">Ce que je sais faire</h2>
+                    <p data-i18n="expertise.lead">Je relie infrastructure, données et IA.</p>
+                </div>
+                <div class="skills">
+                    <article><span class="skill-domain">Data</span><h3 data-i18n="exp.data">Data engineering</h3><p data-i18n="exp.data.p"></p><ul class="stack"><li>Spark</li><li>Kafka</li><li>Airflow</li><li>dbt</li><li>Delta Lake</li><li>Hadoop</li></ul></article>
+                    <article><span class="skill-domain">Cloud</span><h3 data-i18n="exp.cloud">Cloud & lakehouse</h3><p data-i18n="exp.cloud.p"></p><ul class="stack"><li>Azure</li><li>Databricks</li><li>Synapse</li><li>Data Factory</li><li>AWS</li><li>Terraform</li><li>Kubernetes</li><li>Docker</li></ul></article>
+                    <article><span class="skill-domain">AI</span><h3 data-i18n="exp.ai">AI engineering</h3><p data-i18n="exp.ai.p"></p><ul class="stack"><li>LangGraph</li><li>LangChain</li><li>MCP</li><li>FAISS</li><li>pgvector</li><li>FastAPI</li><li>Ollama</li></ul></article>
+                    <article><span class="skill-domain">ML</span><h3 data-i18n="exp.ml">Machine learning</h3><p data-i18n="exp.ml.p"></p><ul class="stack"><li>PyTorch</li><li>scikit-learn</li><li>GraphSAGE</li><li>Grad-CAM</li></ul></article>
+                    <article><span class="skill-domain">Analytics</span><h3 data-i18n="exp.bi">Analytics & BI</h3><p data-i18n="exp.bi.p"></p><ul class="stack"><li>SQL</li><li>Power BI</li><li>pandas</li><li>Matplotlib</li></ul></article>
+                    <article><span class="skill-domain">Ops</span><h3 data-i18n="exp.ops">Exploitation</h3><p data-i18n="exp.ops.p"></p><ul class="stack"><li>Prometheus</li><li>Grafana</li><li>pytest</li><li>CI/CD</li><li>Linux</li><li>Git</li></ul></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="projets">
+            <div class="shell">
+                <div class="section-head">
+                    <h2 data-i18n="projects.title">Projets</h2>
+                    <p data-i18n="projects.lead">Chaque projet s'ouvre sur une page qui explique le problème, ce que j'ai construit et ce que ça donne.</p>
+                </div>
+                <div class="project-toolbar">
+                    <div class="chips" id="project-filters" role="group" data-i18n-attr="aria-label:projects.filter"></div>
+                    <label class="search">
+                        <span class="sr-only" data-i18n="projects.search.label">Rechercher un projet</span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                        <input type="search" id="project-search" autocomplete="off" data-i18n-attr="placeholder:projects.search">
+                        <kbd aria-hidden="true">/</kbd>
+                    </label>
+                </div>
+                <div id="project-groups"></div>
+                <p class="empty" id="projects-empty" hidden data-i18n="projects.empty">Aucun projet ne correspond.</p>
+            </div>
+        </section>
+
+
+        <section class="section" id="parcours">
+            <div class="shell journey">
+                <div class="journey-intro">
+                    <h2 data-i18n="journey.title">Parcours</h2>
+                    <p data-i18n="journey.lead"></p>
+                    <a class="text-link" href="https://www.linkedin.com/in/amine-data-engineer/" target="_blank" rel="noreferrer" data-i18n="journey.linkedin">Voir le profil LinkedIn</a>
+                </div>
+                <ol class="timeline">
+                    <li>
+                        <div class="when"><time datetime="2026-07" data-i18n="job.1.date"></time><span data-i18n="job.1.type"></span></div>
+                        <div class="role"><img class="org-logo" src="images/logos/n-one.webp" width="56" height="56" alt="N+ONE Datacenters" loading="lazy"><p class="org">N+ONE Data Center · One Cloud</p><h3 data-i18n="job.1.title"></h3><p data-i18n="job.1.text"></p><ul class="stack"><li>Kubernetes</li><li>vLLM</li><li>GPU</li><li>GitLab CI/CD</li><li>Autoscaling</li><li>FinOps</li></ul></div>
+                    </li>
+                    <li>
+                        <div class="when"><time datetime="2025-06" data-i18n="job.2.date"></time><span data-i18n="job.2.type"></span></div>
+                        <div class="role"><img class="org-logo" src="images/logos/ocp.webp" width="56" height="56" alt="Groupe OCP" loading="lazy"><p class="org">Groupe OCP · Khouribga</p><h3 data-i18n="job.2.title"></h3><p data-i18n="job.2.text"></p><ul class="stack"><li>Azure Data Factory</li><li>Databricks</li><li>Spark</li><li>Airflow</li><li>dbt</li></ul></div>
+                    </li>
+                    <li>
+                        <div class="when"><time datetime="2023-10" data-i18n="job.3.date"></time><span data-i18n="job.3.type"></span></div>
+                        <div class="role"><img class="org-logo" src="images/logos/ensa.webp" width="56" height="56" alt="ENSA Khouribga" loading="lazy"><p class="org">ENSA Khouribga</p><h3 data-i18n="job.3.title"></h3><p data-i18n="job.3.text"></p></div>
+                    </li>
+                    <li>
+                        <div class="when"><time datetime="2024-06" data-i18n="job.4.date"></time><span data-i18n="job.4.type"></span></div>
+                        <div class="role"><img class="org-logo" src="images/logos/1337.webp" width="56" height="56" alt="1337 Khouribga" loading="lazy"><p class="org" data-i18n="job.4.org"></p><h3 data-i18n="job.4.title"></h3><p data-i18n="job.4.text"></p></div>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="section section-tint" id="certifications">
+            <div class="shell">
+                <div class="section-head">
+                    <h2 data-i18n="certs.title">Certifications</h2>
+                    <p data-i18n="certs.lead"></p>
+                </div>
+                <div class="chips" id="cert-filters" role="group" data-i18n-attr="aria-label:certs.filter"></div>
+                <div class="cert-grid" id="cert-grid"></div>
+                <div class="center"><button class="button button-ghost" type="button" id="cert-toggle"></button></div>
+            </div>
+        </section>
+
+        <section class="section contact" id="contact">
+            <div class="shell contact-grid">
+                <div class="contact-copy">
+                    <h2 data-i18n="contact.title">Parlons de votre projet data.</h2>
+                    <p data-i18n="contact.lead"></p>
+                    <div class="email-row">
+                        <a class="email" href="mailto:amineaitalioff.pro@gmail.com">amineaitalioff.pro@gmail.com</a>
+                        <button class="copy-button" type="button" id="copy-email" data-email="amineaitalioff.pro@gmail.com"><span data-i18n="contact.copy">Copier</span></button>
+                        <span class="copy-status" id="copy-status" role="status" aria-live="polite"></span>
+                    </div>
+                    <ul class="contact-links">
+                        <li><a href="https://www.linkedin.com/in/amine-data-engineer/" target="_blank" rel="noreferrer"><span>LinkedIn</span><strong>amine-data-engineer</strong></a></li>
+                        <li><a href="https://github.com/amine-LabsCraft" target="_blank" rel="noreferrer"><span>GitHub</span><strong>amine-LabsCraft</strong></a></li>
+                        <li><a href="tel:+212645240352"><span data-i18n="contact.phone">Téléphone</span><strong>+212 645 240 352</strong></a></li>
+                        <li><a href="CV___Amine_AIT%20ALI%20.pdf" download="CV-Amine-AIT-ALI.pdf"><span data-i18n="contact.cv">CV</span><strong data-i18n="contact.cv.value">Télécharger le PDF</strong></a></li>
+                    </ul>
+                </div>
+
+                <form class="contact-form" id="contact-form" novalidate>
+                    <h3 data-i18n="form.title">Écrivez-moi</h3>
+                    <input type="hidden" name="name" id="contact-sender-name">
+                    <input type="hidden" name="reply_to" id="contact-reply-to">
+                    <input type="hidden" name="to_email" value="amineaitalioff.pro@gmail.com">
+                    <div class="form-honeypot" aria-hidden="true"><label for="company" data-i18n="form.company">Entreprise</label><input type="text" name="company" id="company" tabindex="-1" autocomplete="off"></div>
+                    <div class="field">
+                        <label for="contact-email-input" data-i18n="form.email">Votre adresse email</label>
+                        <input type="email" name="email" id="contact-email-input" autocomplete="email" required data-i18n-attr="placeholder:form.email.ph">
+                        <small data-i18n="form.email.help"></small>
+                    </div>
+                    <div class="field">
+                        <label for="contact-subject" data-i18n="form.subject">Objet</label>
+                        <input type="text" name="sujet" id="contact-subject" minlength="3" maxlength="120" required autocomplete="off" data-i18n-attr="placeholder:form.subject.ph">
+                    </div>
+                    <div class="field">
+                        <label for="contact-message" data-i18n="form.message">Votre message</label>
+                        <textarea name="message" id="contact-message" rows="6" maxlength="2000" required data-i18n-attr="placeholder:form.message.ph"></textarea>
+                        <small class="counter"><span id="message-count">0</span>/2000 <span data-i18n="form.chars">caractères</span></small>
+                    </div>
+                    <button class="button button-primary form-submit" type="submit"><span class="submit-label" data-i18n="form.send">Envoyer le message</span></button>
+                    <p class="feedback success" id="form-success" role="status" hidden data-i18n="form.success"></p>
+                    <p class="feedback error" id="form-error" role="alert" hidden data-i18n="form.error"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="shell footer-row">
+            <p>© <span id="current-year">2026</span> Amine AIT ALI. <span data-i18n="footer.rights">Portfolio professionnel.</span></p>
+            <nav class="footer-nav" aria-label="Footer">
+                <a href="#projets" data-i18n="nav.projects">Projets</a>
+                <a href="#certifications" data-i18n="nav.certs">Certifications</a>
+                <a href="#contact">Contact</a>
+                <a href="#top" data-i18n="footer.top">Retour en haut</a>
+            </nav>
+        </div>
+    </footer>
+
+    <button class="to-top" type="button" data-i18n-attr="aria-label:footer.top;title:footer.top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+    <dialog class="viewer" id="cert-dialog" aria-labelledby="cert-dialog-title">
+        <div class="viewer-bar">
+            <button type="button" class="icon-button" id="cert-prev" data-i18n-attr="aria-label:certs.prev">‹</button>
+            <button type="button" class="icon-button" id="cert-next" data-i18n-attr="aria-label:certs.next">›</button>
+            <button type="button" class="icon-button viewer-close" id="cert-close" data-i18n-attr="aria-label:certs.close">×</button>
+        </div>
+        <div class="cert-detail" id="cert-detail"></div>
+    </dialog>
+
+    <script src="i18n.js?v=14"></script>
+    <script src="data/projects.js?v=14"></script>
+    <script src="data/certificates.js?v=14"></script>
+    <script src="data/architectures.js?v=14"></script>
+    <script src="common.js?v=14"></script>
+    <script src="script.js?v=14"></script>
+    <script src="assistant.js?v=14"></script>
+</body>
+</html>

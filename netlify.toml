@@ -1,0 +1,14 @@
+# Netlify reconstruit le site (dist/) et l'assistant (netlify/functions/ask) à chaque mise à jour du dépôt.
+# Variables d'environnement à définir dans Netlify (Site configuration > Environment variables) :
+#   GROQ_API_KEY        clé Groq (obligatoire)
+#   OPENROUTER_API_KEY  clé OpenRouter (optionnelle, secours si Groq est indisponible)
+[build]
+  command = "node tools/build.mjs"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"

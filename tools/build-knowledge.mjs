@@ -1,0 +1,146 @@
+/*
+ * Construit la base de connaissances de l'assistant RAG.
+ * Sources : knowledge/cv.md, knowledge/readmes/*.md, data/projects.js, data/architectures.js, data/certificates.js.
+ * Sortie : netlify/functions/ask/knowledge.mjs (passages + index BM25), embarqué dans la fonction Netlify.
+ *
+ * Utilisation : node tools/build-knowledge.mjs
+ */
+import fs from "node:fs";
+import path from "node:path";
+import vm from "node:vm";
+import { fileURLToPath } from "node:url";
+import { tokenize } from "../netlify/functions/ask/text.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
+
+function loadData(file) {
+    const sandbox = { window: {} };
+    vm.runInNewContext(read(file), sandbox);
+    return sandbox.window;
+}
+
+const { PORTFOLIO_PROJECTS: projects } = loadData("data/projects.js");
+const { PORTFOLIO_ARCHITECTURES: architectures } = loadData("data/architectures.js");
+const { PORTFOLIO_CERTIFICATES: certificates } = loadData("data/certificates.js");
+
+const chunks = [];
+const MAX_CHARS = 1500;
+
+function add(source, text, extra = {}) {
+    const clean = text.replace(/\n{3,}/g, "\n\n").trim();
+    if (clean.length < 60) return;
+    chunks.push({ id: chunks.length, source, text: clean, ...extra });
+}
+
+/* Découpe un long texte en morceaux d'environ MAX_CHARS, sur les paragraphes. */
+function split(text) {
+    const parts = [];
+    let current = "";
+    for (const para of text.split(/\n(?=\S)/)) {
+        if ((current + "\n" + para).length > MAX_CHARS && current) { parts.push(current); current = ""; }
+        current = current ? `${current}\n${para}` : para;
+        while (current.length > MAX_CHARS * 1.4) { parts.push(current.slice(0, MAX_CHARS)); current = current.slice(MAX_CHARS); }
+    }
+    if (current) parts.push(current);
+    return parts;
+}
+
+const fr = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v.fr : v);
+const en = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v.en : v);
+const projectUrl = (p) => `project.html?id=${p.id}`;
+const GROUPS = { data: "Data engineering & Cloud", ai: "IA & Machine Learning", software: "Software" };
+
+/* 1. CV : une section par passage. Le profil et les expériences sont toujours fournis au modèle. */
+const cvSections = read("knowledge/cv.md").split(/\n(?=## )/);
+cvSections.forEach((section, i) => add({ title: "CV", url: "CV___Amine_AIT%20ALI%20.pdf" }, section, i <= 2 ? { always: true, kind: "cv" } : { kind: "cv" }));
+
+/* 2. Projets : une fiche complète par projet, en français et en anglais. */
+for (const p of projects) {
+    const arch = architectures[p.id];
+    const archText = arch ? [
+        "Architecture :",
+        ...arch.stages.map((s, i) => {
+            const branches = s.branches ? s.branches.map((b) => `${fr(b.title)} (${(b.items || []).join(", ")}) : ${fr(b.detail)}`).join(" | ") : "";
+            return `${i + 1}. ${fr(s.title)}${s.items?.length ? ` [${s.items.join(", ")}]` : ""} : ${fr(s.detail) || branches}`;
+        }),
+        ...(arch.bands || []).map((b) => `Transverse — ${fr(b.title)} [${(b.items || []).join(", ")}] : ${fr(b.detail)}`)
+    ].join("\n") : "";
+    const text = [
+        `Projet : ${p.title}${p.titleEn ? ` (${p.titleEn})` : ""} — ${fr(p.kind)} / ${en(p.kind)}. Domaine : ${GROUPS[p.group]}.`,
+        p.source === "cloud" ? "Projet réalisé dans le cloud, présenté sur LinkedIn (pas de dépôt de code)." : `Dépôt GitHub : github.com/amine-LabsCraft/${p.repo}.`,
+        p.updated ? `Dernière mise à jour : ${p.updated}.` : "",
+        `Résumé : ${fr(p.tagline)}`,
+        `Summary (EN): ${en(p.tagline)}`,
+        `Problème : ${fr(p.problem)}`,
+        `Réalisation : ${(fr(p.built) || []).join(" ")}`,
+        p.metrics?.length ? `Chiffres clés : ${p.metrics.map((m) => `${m.value} ${fr(m.label)}`).join(", ")}.` : "",
+        `Stack : ${p.stack.join(", ")}.`,
+        archText
+    ].filter(Boolean).join("\n");
+    add({ title: p.titleEn && p.title !== p.titleEn ? p.title : p.title, url: projectUrl(p) }, text, { project: p.id, kind: "project" });
+}
+
+/* 3. README des dépôts : nettoyés puis découpés par section. */
+const byRepo = Object.fromEntries(projects.filter((p) => p.repo).map((p) => [p.repo, p]));
+const SKIP = /(table des mati|sommaire|table of contents|licen[cs]e|contribu|installation|prérequis|prerequisites|dépannage|troubleshooting|démarrage rapide|quick ?start|faq|auteur|author|commandes utiles)/i;
+for (const file of fs.readdirSync(path.join(ROOT, "knowledge/readmes"))) {
+    const project = byRepo[file.replace(/\.md$/, "")];
+    if (!project) continue;
+    const md = read(`knowledge/readmes/${file}`)
+        .replace(/```[\s\S]*?```/g, (block) => (block.length < 700 && /→|-->|│|▼|flowchart/.test(block) ? block.replace(/```\w*/g, "") : ""))
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+        .replace(/:contentReference\[[^\]]*\]\{[^}]*\}/g, "")
+        .replace(/^\s*[-|: ]+\s*$/gm, "")
+        .replace(/[ \t]+/g, " ");
+    let count = 0;
+    for (const section of md.split(/\n(?=#{1,3} )/)) {
+        const heading = (section.match(/^#{1,3} (.*)/) || [null, ""])[1];
+        if (SKIP.test(heading)) continue;
+        for (const part of split(section)) {
+            if (count >= 45) break;
+            add({ title: `${project.title} (README)`, url: projectUrl(project) }, `[README ${project.title}] ${part}`, { project: project.id, kind: "readme" });
+            count += 1;
+        }
+    }
+}
+
+/* 4. Certifications, regroupées par domaine. */
+const CAT = { data: "Data & SQL", ai: "IA & Machine Learning", cloud: "Cloud", dev: "Développement" };
+for (const [cat, label] of Object.entries(CAT)) {
+    const list = certificates.filter((c) => c.category === cat);
+    add({ title: "Certifications", url: "index.html#certifications" },
+        `Certifications ${label} (${list.length}) :\n` + list.map((c) => `- ${c.title} — ${c.issuer}${c.date ? `, ${c.date}` : ""}${c.skills ? ` (${c.skills.join(", ")})` : ""}`).join("\n"),
+        { kind: "certs" });
+}
+add({ title: "Certifications", url: "index.html#certifications" },
+    `Amine a ${certificates.length} certifications au total : ${Object.entries(CAT).map(([c, l]) => `${certificates.filter((x) => x.category === c).length} en ${l}`).join(", ")}. Émetteurs : DataCamp, Coursera (Google, IBM, University of Michigan, Vanderbilt, University of Colorado Boulder), 365 Data Science, Microsoft, Cisco Networking Academy.`,
+    { kind: "certs" });
+
+/* 5. Vue d'ensemble du portfolio, toujours fournie au modèle. */
+add({ title: "Portfolio", url: "index.html#projets" },
+    `Le portfolio présente ${projects.length} projets. ` + Object.entries(GROUPS).map(([g, l]) => `${l} : ${projects.filter((p) => p.group === g).map((p) => p.title).join(", ")}`).join(". ") + ".",
+    { always: true, kind: "overview" });
+
+/* Index BM25 : fréquence des termes par passage et fréquence documentaire. */
+const df = {};
+let totalLength = 0;
+for (const c of chunks) {
+    const tokens = tokenize(`${c.source.title} ${c.text}`);
+    const tf = {};
+    for (const t of tokens) tf[t] = (tf[t] || 0) + 1;
+    c.tf = tf;
+    c.len = tokens.length;
+    totalLength += tokens.length;
+    for (const t of Object.keys(tf)) df[t] = (df[t] || 0) + 1;
+}
+
+const out = `/* Généré par tools/build-knowledge.mjs — ne pas modifier à la main. */
+export const CHUNKS = ${JSON.stringify(chunks)};
+export const DF = ${JSON.stringify(df)};
+export const AVGDL = ${totalLength / chunks.length};
+`;
+fs.writeFileSync(path.join(ROOT, "netlify/functions/ask/knowledge.mjs"), out);
+console.log(`${chunks.length} passages, ${Object.keys(df).length} termes, ${(out.length / 1024).toFixed(0)} Ko`);
