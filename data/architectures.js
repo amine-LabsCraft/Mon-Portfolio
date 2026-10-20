@@ -5,6 +5,23 @@
  * bands   : éléments transverses (supervision, sécurité, infrastructure…), affichés sous le schéma.
  */
 window.PORTFOLIO_ARCHITECTURES = {
+    "lakebase": {
+        stages: [
+            { title: { fr: "Applications & agents IA", en: "Applications & AI agents" }, items: [], detail: { fr: "Envoient des requêtes SQL transactionnelles (OLTP) via l'interface Postgres standard.", en: "Send transactional SQL queries (OLTP) through the standard Postgres interface." } },
+            { title: { fr: "Compute sans état", en: "Stateless compute" }, items: ["PostgreSQL"], detail: { fr: "Postgres 17 (SQL, MVCC, index), cache local des pages récentes, compute secondaire qui prend le relais ; autoscaling, 1 CU par branche.", en: "Postgres 17 (SQL, MVCC, indexes), local cache of recent pages, secondary compute for failover; autoscaling, 1 CU per branch." } },
+            { title: { fr: "Journal & pages", en: "Log & pages" }, branches: [
+                { title: { fr: "Safekeepers", en: "Safekeepers" }, items: [], detail: { fr: "WAL répliqué par quorum Paxos, acquitté avant le commit.", en: "WAL replicated by Paxos quorum, acknowledged before commit." } },
+                { title: { fr: "Pageservers", en: "Pageservers" }, items: [], detail: { fr: "Pages reconstruites depuis le WAL ; branches en copy-on-write.", en: "Pages rebuilt from the WAL; copy-on-write branches." } }
+            ] },
+            { title: { fr: "Stockage durable", en: "Durable storage" }, items: ["AWS"], detail: { fr: "Couches de pages dans le stockage objet (S3 en us-east-2, ou Azure Blob), séparé du compute.", en: "Page layers in object storage (S3 in us-east-2, or Azure Blob), separate from compute." } },
+            { title: { fr: "Lakehouse", en: "Lakehouse" }, items: ["Databricks", "Delta Lake", "Unity Catalog"], detail: { fr: "Données exposées en Parquet / Delta : Spark, SQL, BI et ML les lisent sans ETL ni copie.", en: "Data exposed as Parquet / Delta: Spark, SQL, BI and ML read it with no ETL or copy." } }
+        ],
+        bands: [
+            { title: { fr: "Branching", en: "Branching" }, items: [], detail: { fr: "Branches production et développement : des pointeurs vers les mêmes données, seules les pages modifiées sont copiées ; 7 jours d'historique.", en: "Production and development branches: pointers to the same data, only modified pages are copied; 7 days of history." } },
+            { title: { fr: "Read replicas", en: "Read replicas" }, items: ["PostgreSQL"], detail: { fr: "Computes en lecture seule, synchronisés en asynchrone via le WAL, pour décharger tableaux de bord et rapports.", en: "Read-only computes, synced asynchronously through the WAL, to offload dashboards and reports." } },
+            { title: { fr: "Gouvernance", en: "Governance" }, items: ["Unity Catalog"], detail: { fr: "Contrôle d'accès unifié ; Lakehouse Sync ramène les tables analytiques vers les applications et les agents.", en: "Unified access control; Lakehouse Sync brings analytical tables back to applications and agents." } }
+        ]
+    },
     "walmart-streaming-flow": {
         stages: [
             { title: { fr: "Source transactionnelle", en: "Transactional source" }, items: ["Flask", "PostgreSQL"], detail: { fr: "Order Pulse écrit chaque commande et ses articles dans une seule transaction ; un trigger pose un change_version monotone.", en: "Order Pulse writes each order and its items in one transaction; a trigger assigns a monotonic change_version." } },

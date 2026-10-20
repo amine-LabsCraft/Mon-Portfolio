@@ -157,7 +157,9 @@
         const arch = architectureOf(project);
         if (!arch) return "";
         const rows = arch.stages.map((stage, i) => {
-            const items = [...new Set(stageItems(stage))];
+            /* Un logo par technologie distincte (Unity Catalog et Databricks partagent le même). */
+            const seen = new Set();
+            const items = stageItems(stage).filter((n) => { const key = techLogo(n) || n; if (seen.has(key)) return false; seen.add(key); return true; });
             return `<li>
                     <span class="arch-num">${String(i + 1).padStart(2, "0")}</span>
                     <span class="arch-row-title">${escapeHtml(pick(stage.title))}</span>

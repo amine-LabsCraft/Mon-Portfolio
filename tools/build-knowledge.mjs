@@ -107,6 +107,18 @@ for (const file of fs.readdirSync(path.join(ROOT, "knowledge/readmes"))) {
     }
 }
 
+/* 3 bis. Notes des projets sans dépôt (knowledge/projects/<id>.md), découpées par section. */
+const notesDir = path.join(ROOT, "knowledge/projects");
+for (const file of fs.existsSync(notesDir) ? fs.readdirSync(notesDir).filter((f) => f.endsWith(".md")) : []) {
+    const project = projects.find((p) => p.id === file.replace(/\.md$/, ""));
+    if (!project) continue;
+    for (const section of read(`knowledge/projects/${file}`).split(/\n(?=#{1,3} )/)) {
+        for (const part of split(section)) {
+            add({ title: `${project.title} (notes)`, url: projectUrl(project) }, `[Notes ${project.title}] ${part}`, { project: project.id, kind: "readme" });
+        }
+    }
+}
+
 /* 4. Certifications, regroupées par domaine. */
 const CAT = { data: "Data & SQL", ai: "IA & Machine Learning", cloud: "Cloud", dev: "Développement" };
 for (const [cat, label] of Object.entries(CAT)) {

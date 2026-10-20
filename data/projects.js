@@ -6,6 +6,55 @@
  */
 window.PORTFOLIO_PROJECTS = [
     {
+        id: "lakebase",
+        group: "data",
+        featured: true,
+        title: "Databricks Lakebase",
+        source: "cloud",
+        categories: ["data", "cloud"],
+        isNew: true,
+        updated: "2026-10-20",
+        kind: { fr: "Base transactionnelle sur le Lakehouse", en: "Transactional database on the Lakehouse" },
+        tagline: {
+            fr: "Un projet Lakebase sur Databricks : PostgreSQL 17 serverless pour les applications et les agents IA, avec des données lisibles directement par le Lakehouse.",
+            en: "A Lakebase project on Databricks: serverless PostgreSQL 17 for applications and AI agents, with data the Lakehouse can read directly."
+        },
+        problem: {
+            fr: "Une base transactionnelle (OLTP) et un lakehouse analytique (OLAP) vivent d'habitude séparés : il faut des pipelines ETL et des copies pour relier les deux, et chaque environnement de test duplique toute la base.",
+            en: "A transactional database (OLTP) and an analytical lakehouse (OLAP) usually live apart: ETL pipelines and copies are needed to connect them, and every test environment duplicates the whole database."
+        },
+        built: {
+            fr: [
+                "Création d'un projet Lakebase sur AWS (us-east-2) avec PostgreSQL 17, rétention d'historique de 7 jours et télémétrie Postgres activée.",
+                "Deux branches, production et développement, chacune avec son compute primaire de 1 CU : la branche de développement est créée en copy-on-write, sans dupliquer les données.",
+                "Suivi des branches et des computes dans la console : CU allouées, RAM, état actif ou inactif.",
+                "Étude de l'architecture : compute Postgres sans état, WAL répliqué par les Safekeepers (quorum Paxos), pages reconstruites par les Pageservers, stockage objet S3 ou Azure Blob.",
+                "Lien avec le Lakehouse : données exposées en Parquet / Delta sous Unity Catalog, read replicas pour les lectures lourdes, Lakehouse Sync vers les applications.",
+                "Deux schémas d'architecture qui expliquent le flux des données de bout en bout."
+            ],
+            en: [
+                "Created a Lakebase project on AWS (us-east-2) with PostgreSQL 17, 7-day history retention and Postgres telemetry enabled.",
+                "Two branches, production and development, each with a 1 CU primary compute: the development branch is copy-on-write, with no data duplication.",
+                "Monitored branches and computes in the console: allocated CU, RAM, active or idle state.",
+                "Studied the architecture: stateless Postgres compute, WAL replicated by Safekeepers (Paxos quorum), pages rebuilt by Pageservers, S3 or Azure Blob object storage.",
+                "Connection to the Lakehouse: data exposed as Parquet / Delta under Unity Catalog, read replicas for heavy reads, Lakehouse Sync back to applications.",
+                "Two architecture diagrams explaining the end-to-end data flow."
+            ]
+        },
+        metrics: [
+            { value: "17", label: { fr: "version de PostgreSQL", en: "PostgreSQL version" } },
+            { value: "2", label: { fr: "branches copy-on-write", en: "copy-on-write branches" } },
+            { value: "7 j", label: { fr: "d'historique", en: "history retention" } },
+            { value: "1 CU", label: { fr: "par compute", en: "per compute" } }
+        ],
+        stack: ["Databricks", "PostgreSQL", "AWS", "Delta Lake", "Unity Catalog", "Parquet", "Spark"],
+        images: [
+            { file: "01-architecture.webp", caption: { fr: "Architecture Lakebase et flux de données", en: "Lakebase architecture and data flow" } },
+            { file: "02-flux-global.webp", caption: { fr: "Écriture, lecture et stockage : compute sans état, Safekeepers, Pageservers", en: "Writes, reads and storage: stateless compute, Safekeepers, Pageservers" } },
+            { file: "03-console.webp", caption: { fr: "Console du projet : branches, computes et réglages", en: "Project console: branches, computes and settings" } }
+        ]
+    },
+    {
         id: "walmart-streaming-flow",
         group: "data",
         featured: true,
