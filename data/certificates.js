@@ -7,6 +7,8 @@
  * Affichage : du plus récent au plus ancien.
  */
 window.PORTFOLIO_CERTIFICATES = [
+    { id: "understanding-modern-data-architecture", title: "Understanding Modern Data Architecture", issuer: "DataCamp", date: "2026-10-24", hours: 2, category: "data", file: "certs/understanding-modern-data-architecture.webp", width: 1400, height: 805, skills: ["Data architecture", "Lakehouse", "Data warehouse"], projects: ["lakebase", "walmart-streaming-flow", "walmart-lakehouse"] },
+    { id: "develop-for-azure-storage", title: "Develop for Azure Storage", issuer: "DataCamp", date: "2026-10-25", hours: 3, category: "cloud", file: "certs/develop-for-azure-storage.webp", width: 1283, height: 745, skills: ["Azure Storage", "Blob Storage", "Azure"], projects: ["synapse-lakehouse", "adf-pipeline", "terraform-azure"] },
     { id: "spark-databricks", title: "Data Transformation with Spark SQL in Databricks", issuer: "DataCamp", date: "2026-09-26", hours: 3, category: "data", file: "certs/spark-databricks.webp", width: 1491, height: 828, skills: ["Spark SQL", "Databricks", "Delta Lake"], projects: ["walmart-streaming-flow", "walmart-lakehouse"] },
     { id: "azure", title: "Understanding Microsoft Azure", issuer: "DataCamp", date: "2026-09-22", hours: 3, category: "cloud", file: "certs/azure.webp", width: 1383, height: 797, skills: ["Azure", "Cloud"], projects: ["synapse-lakehouse", "adf-pipeline", "terraform-azure", "uber-streaming"] },
     { id: "apis-python", title: "Introduction to APIs in Python", issuer: "DataCamp", date: "2026-06-29", hours: 2, category: "dev", file: "certs/apis-python.webp", width: 1583, height: 907, skills: ["REST", "requests", "Python"], projects: ["cryptopulse"] },

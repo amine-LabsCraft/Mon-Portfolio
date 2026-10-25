@@ -7,3 +7,6 @@ dist/
 *.bak
 node_modules/
 .netlify/
+
+# Dossier de dépôt des nouveaux certificats (vidé par tools/ajouter_certificat.py)
+nouveaux-certificats/
