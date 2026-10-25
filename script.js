@@ -1,6 +1,6 @@
 /* Accueil : projets, certifications et formulaire de contact. */
 const { t, pick } = window.i18n;
-const { escapeHtml, techChip, decorateStacks, architectureCompact, projectLogos, projectTitle, formatDate, orderedProjects, capToNaturalSize, GROUP_ORDER } = window.portfolio;
+const { escapeHtml, techChip, techIcon, decorateStacks, architectureCompact, projectLogos, projectTitle, formatDate, orderedProjects, capToNaturalSize, GROUP_ORDER } = window.portfolio;
 const projects = orderedProjects(window.PORTFOLIO_PROJECTS);
 const certificates = window.PORTFOLIO_CERTIFICATES;
 
@@ -147,6 +147,12 @@ function certFace(cert) {
     </span>`;
 }
 
+/* Entreprises partenaires de la formation (cours DataCamp créé avec Microsoft, par exemple). */
+function certPartners(cert) {
+    if (!cert.partners?.length) return "";
+    return `<span class="cert-partners">${cert.partners.map(techIcon).join("")}<span>${t("certs.partner")} ${escapeHtml(cert.partners.join(", "))}</span></span>`;
+}
+
 function certCard(cert, index) {
     /* Image d'origine si elle est assez grande, sinon une fiche générée nette. */
     const visual = isLowRes(cert)
@@ -158,6 +164,7 @@ function certCard(cert, index) {
             <span class="cert-caption">
                 <small>${escapeHtml(cert.issuer)} · ${t(`certcat.${cert.category}`)}</small>
                 <strong>${escapeHtml(certTitle(cert))}</strong>
+                ${certPartners(cert)}
             </span>
         </button>`;
 }
@@ -212,6 +219,7 @@ function renderCertDetail() {
             <p class="case-kind">${escapeHtml(cert.issuer)} · ${t(`certcat.${cert.category}`)}</p>
             <h2 id="cert-dialog-title">${escapeHtml(certTitle(cert))}</h2>
             <dl>
+                ${cert.partners?.length ? `<div><dt>${t("certs.partner")}</dt><dd><ul class="stack">${cert.partners.map(techChip).join("")}</ul></dd></div>` : ""}
                 ${cert.date ? `<div><dt>${t("certs.issued")}</dt><dd>${formatDate(cert.date, { day: "numeric", month: "long", year: "numeric" })}</dd></div>` : ""}
                 ${cert.hours ? `<div><dt>${t("certs.duration")}</dt><dd>${t("certs.hours", { n: cert.hours })}</dd></div>` : ""}
                 <div><dt>${t("certs.skills")}</dt><dd><ul class="stack">${cert.skills.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul></dd></div>

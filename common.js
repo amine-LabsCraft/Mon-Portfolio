@@ -78,7 +78,8 @@
         "entra id": "microsoft", "google": "google", "vite": "vitejs", "sheetjs": "javascript", "jspdf": "javascript",
         "git": "git", "linux": "linux", "pytest": "pytest", "synapse": AZURE, "faiss": "meta-icon",
         "unity catalog": "databricks", "diffusiongemma": "google", "kafka ui": "kafka-icon", "seaborn": "python",
-        "datacamp": "datacamp", "coursera": "coursera", "java": "java", "polars": "polars"
+        "datacamp": "datacamp", "coursera": "coursera", "java": "java", "polars": "polars",
+        "microsoft": "microsoft", "meta": "meta-icon", "bigquery": "gcp"
     };
 
     function techLogo(name) {

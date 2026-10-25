@@ -111,6 +111,7 @@ def process(filename, projects):
     base = os.path.splitext(filename)[0]
     title = ask("Titre exact du certificat", base)
     issuer = ask("Émetteur (DataCamp, IBM · Coursera, Microsoft…)", "DataCamp")
+    partners = [p.strip() for p in ask("En collaboration avec (Microsoft, Google, IBM… séparés par des virgules ; vide = aucun)").split(",") if p.strip()]
     while True:
         date = parse_date(ask("Date d'obtention (2026-10-25, 25/10/2026 ou Oct 25, 2026 ; vide si inconnue)"))
         if date is not None:
@@ -145,6 +146,8 @@ def process(filename, projects):
         print(f"  Attention : l'image ne fait que {width} px de large ; le site affichera une fiche générée à la place.")
 
     fields = [f"id: {js(cert_id)}", f"title: {js(title)}", f"issuer: {js(issuer)}"]
+    if partners:
+        fields.append(f"partners: {js(partners)}")
     if date:
         fields.append(f"date: {js(date)}")
     if hours.isdigit():

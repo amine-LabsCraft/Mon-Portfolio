@@ -139,7 +139,7 @@ const CAT = { data: "Data & SQL", ai: "IA & Machine Learning", cloud: "Cloud", d
 for (const [cat, label] of Object.entries(CAT)) {
     const list = certificates.filter((c) => c.category === cat);
     add({ title: "Certifications", url: "index.html#certifications" },
-        `Certifications ${label} (${list.length}) :\n` + list.map((c) => `- ${c.title} — ${c.issuer}${c.date ? `, ${c.date}` : ""}${c.skills ? ` (${c.skills.join(", ")})` : ""}`).join("\n"),
+        `Certifications ${label} (${list.length}) :\n` + list.map((c) => `- ${c.title} — ${c.issuer}${c.partners?.length ? `, en collaboration avec ${c.partners.join(", ")}` : ""}${c.date ? `, ${c.date}` : ""}${c.skills ? ` (${c.skills.join(", ")})` : ""}`).join("\n"),
         { kind: "certs" });
 }
 add({ title: "Certifications", url: "index.html#certifications" },
