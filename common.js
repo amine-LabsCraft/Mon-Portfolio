@@ -79,7 +79,8 @@
         "git": "git", "linux": "linux", "pytest": "pytest", "synapse": AZURE, "faiss": "meta-icon",
         "unity catalog": "databricks", "diffusiongemma": "google", "kafka ui": "kafka-icon", "seaborn": "python",
         "datacamp": "datacamp", "coursera": "coursera", "java": "java", "polars": "polars",
-        "microsoft": "microsoft", "meta": "meta-icon", "bigquery": "gcp"
+        "microsoft": "microsoft", "meta": "meta-icon", "bigquery": "gcp", "ibm": "ibm", "cisco": "cisco",
+        "oracle": "oracle", "nvidia": "nvidia", "apache": "apache", "snowflake": "snowflake-icon"
     };
 
     function techLogo(name) {
