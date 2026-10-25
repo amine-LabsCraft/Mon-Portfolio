@@ -23,6 +23,7 @@ function loadData(file) {
 const { PORTFOLIO_PROJECTS: projects } = loadData("data/projects.js");
 const { PORTFOLIO_ARCHITECTURES: architectures } = loadData("data/architectures.js");
 const { PORTFOLIO_CERTIFICATES: certificates } = loadData("data/certificates.js");
+const { PORTFOLIO_DOCS: docs = {} } = loadData("data/docs.js");
 
 const chunks = [];
 const MAX_CHARS = 1500;
@@ -55,6 +56,19 @@ const GROUPS = { data: "Data engineering & Cloud", ai: "IA & Machine Learning", 
 const cvSections = read("knowledge/cv.md").split(/\n(?=## )/);
 cvSections.forEach((section, i) => add({ title: "CV", url: "CV___Amine_AIT%20ALI%20.pdf" }, section, i <= 2 ? { always: true, kind: "cv" } : { kind: "cv" }));
 
+/* Documentation détaillée (data/docs.js) : contexte, démarche, choix et résultats, en français. */
+function docText(doc) {
+    if (!doc) return "";
+    return [
+        `Contexte : ${fr(doc.context)}`,
+        (fr(doc.pains) || []).length ? `Ce qui bloquait : ${fr(doc.pains).join(" ")}` : "",
+        `Démarche : ${doc.steps.map((s, i) => `${i + 1}) ${fr(s.title)} : ${fr(s.text)}`).join(" ")}`,
+        doc.decisions?.length ? `Choix techniques : ${doc.decisions.map((d) => `${fr(d.choice)} (${fr(d.why)})`).join(" ")}` : "",
+        (fr(doc.results) || []).length ? `Résultats : ${fr(doc.results).join(" ")}` : "",
+        (fr(doc.next) || []).length ? `Limites et suites : ${fr(doc.next).join(" ")}` : ""
+    ].filter(Boolean).join("\n");
+}
+
 /* 2. Projets : une fiche complète par projet, en français et en anglais. */
 for (const p of projects) {
     const arch = architectures[p.id];
@@ -76,7 +90,8 @@ for (const p of projects) {
         `Réalisation : ${(fr(p.built) || []).join(" ")}`,
         p.metrics?.length ? `Chiffres clés : ${p.metrics.map((m) => `${m.value} ${fr(m.label)}`).join(", ")}.` : "",
         `Stack : ${p.stack.join(", ")}.`,
-        archText
+        archText,
+        docText(docs[p.id])
     ].filter(Boolean).join("\n");
     add({ title: p.titleEn && p.title !== p.titleEn ? p.title : p.title, url: projectUrl(p) }, text, { project: p.id, kind: "project" });
 }
