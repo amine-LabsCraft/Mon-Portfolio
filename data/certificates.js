@@ -7,6 +7,7 @@
  * Affichage : du plus récent au plus ancien.
  */
 window.PORTFOLIO_CERTIFICATES = [
+    { id: "data-modeling-in-power-bi", title: "Data Modeling in Power BI", issuer: "DataCamp", date: "2026-10-25", hours: 3, category: "data", file: "certs/data-modeling-in-power-bi.webp", width: 1507, height: 832, skills: ["Power BI", "Data modeling", "Star schema"], projects: ["walmart-streaming-flow", "cryptopulse", "walmart-lakehouse"] },
     { id: "understanding-modern-data-architecture", title: "Understanding Modern Data Architecture", issuer: "DataCamp", date: "2026-10-24", hours: 2, category: "data", file: "certs/understanding-modern-data-architecture.webp", width: 1400, height: 805, skills: ["Data architecture", "Lakehouse", "Data warehouse"], projects: ["lakebase", "walmart-streaming-flow", "walmart-lakehouse"] },
     { id: "develop-for-azure-storage", title: "Develop for Azure Storage", issuer: "DataCamp", date: "2026-10-25", hours: 3, category: "cloud", file: "certs/develop-for-azure-storage.webp", width: 1283, height: 745, skills: ["Azure Storage", "Blob Storage", "Azure"], projects: ["synapse-lakehouse", "adf-pipeline", "terraform-azure"] },
     { id: "spark-databricks", title: "Data Transformation with Spark SQL in Databricks", issuer: "DataCamp", date: "2026-09-26", hours: 3, category: "data", file: "certs/spark-databricks.webp", width: 1491, height: 828, skills: ["Spark SQL", "Databricks", "Delta Lake"], projects: ["walmart-streaming-flow", "walmart-lakehouse"] },
