@@ -5,6 +5,20 @@
  * bands   : éléments transverses (supervision, sécurité, infrastructure…), affichés sous le schéma.
  */
 window.PORTFOLIO_ARCHITECTURES = {
+    "spotify-pipeline": {
+        stages: [
+            { title: { fr: "Source", en: "Source" }, items: ["Azure SQL"], detail: { fr: "5 tables en étoile (FactStream, DimUser, DimArtist, DimTrack, DimDate), chacune avec une colonne de date de mise à jour.", en: "5 star-schema tables (FactStream, DimUser, DimArtist, DimTrack, DimDate), each with an update timestamp column." } },
+            { title: { fr: "Ingestion incrémentale", en: "Incremental ingestion" }, items: ["Azure Data Factory"], detail: { fr: "Lookup de loop_input.json, ForEach sur les tables, copie des lignes plus récentes que le filigrane, mise à jour de cdc.json ou suppression du fichier vide.", en: "Lookup of loop_input.json, ForEach over the tables, copy of rows newer than the watermark, cdc.json update or empty-file deletion." } },
+            { title: { fr: "Bronze", en: "Bronze" }, items: ["ADLS Gen2", "Parquet"], detail: { fr: "Un dossier Parquet par table et un fichier d'état {table}_cdc/cdc.json.", en: "One Parquet folder per table and a {table}_cdc/cdc.json state file." } },
+            { title: { fr: "Silver", en: "Silver" }, items: ["Auto Loader", "PySpark"], detail: { fr: "Lecture cloudFiles en streaming (trigger once), dédoublonnage et nettoyage, écriture Delta dans spotify_cata.silver.", en: "Streaming cloudFiles read (trigger once), deduplication and cleaning, Delta writes to spotify_cata.silver." } },
+            { title: { fr: "Gold", en: "Gold" }, items: ["Delta Live Tables"], detail: { fr: "create_auto_cdc_flow : dimensions en SCD 2, faits en SCD 1, règle qualité expect_all_or_drop sur dimuser.", en: "create_auto_cdc_flow: SCD 2 dimensions, SCD 1 facts, expect_all_or_drop quality rule on dimuser." } }
+        ],
+        bands: [
+            { title: { fr: "Gouvernance", en: "Governance" }, items: ["Unity Catalog"], detail: { fr: "Catalogue spotify_cata, External Locations et identité managée : aucun montage ni clé dans le code.", en: "spotify_cata catalog, External Locations and managed identity: no mounts or keys in code." } },
+            { title: { fr: "Supervision", en: "Monitoring" }, items: ["Logic Apps"], detail: { fr: "Appel HTTP en fin de boucle ; e-mail avec le nom du pipeline et le Run ID.", en: "HTTP call at the end of the loop; e-mail with the pipeline name and run ID." } },
+            { title: { fr: "Configuration", en: "Configuration" }, items: ["GitHub"], detail: { fr: "loop_input.json versionné : ajouter une table ne demande aucun nouveau pipeline.", en: "Versioned loop_input.json: adding a table needs no new pipeline." } }
+        ]
+    },
     "lakebase": {
         stages: [
             { title: { fr: "Applications & agents IA", en: "Applications & AI agents" }, items: [], detail: { fr: "Envoient des requêtes SQL transactionnelles (OLTP) via l'interface Postgres standard.", en: "Send transactional SQL queries (OLTP) through the standard Postgres interface." } },

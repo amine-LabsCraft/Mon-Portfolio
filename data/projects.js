@@ -6,6 +6,59 @@
  */
 window.PORTFOLIO_PROJECTS = [
     {
+        id: "spotify-pipeline",
+        group: "data",
+        featured: true,
+        title: "Spotify Data Pipeline",
+        source: "github",
+        repo: "Spotify-pepline",
+        categories: ["data", "cloud"],
+        isNew: true,
+        updated: "2026-10-31",
+        kind: { fr: "Lakehouse Azure incrémental", en: "Incremental Azure lakehouse" },
+        tagline: {
+            fr: "Les données d'écoute d'une appli de streaming musical chargées en incrémental par Azure Data Factory, nettoyées par Auto Loader et historisées en SCD 2 avec Delta Live Tables.",
+            en: "Listening data from a music streaming app loaded incrementally by Azure Data Factory, cleaned by Auto Loader and historised as SCD 2 with Delta Live Tables."
+        },
+        problem: {
+            fr: "Recopier toute la base à chaque run coûte cher, un pipeline par table ne passe pas à l'échelle, et les dimensions changent dans le temps (un abonné passe de Free à Premium) : il fallait ne charger que les nouveautés, avec un seul pipeline, sans perdre l'historique.",
+            en: "Copying the whole database on every run is costly, one pipeline per table does not scale, and dimensions change over time (a subscriber moves from Free to Premium): the goal was to load only what changed, with a single pipeline, without losing history."
+        },
+        built: {
+            fr: [
+                "Base Azure SQL en schéma en étoile : FactStream (écoutes) et quatre dimensions (abonnés, artistes, titres, dates), 2 865 lignes initiales puis 470 lignes incrémentales.",
+                "Un seul pipeline ADF piloté par loop_input.json (lu sur GitHub) : une boucle ForEach charge les 5 tables avec la même logique.",
+                "Chargement incrémental par filigrane : un fichier cdc.json par table dans Bronze, une requête cdc_col > dernier filigrane, puis MAX(cdc_col) pour avancer l'état.",
+                "Suppression automatique des fichiers Parquet vides quand un run ne trouve aucune nouvelle ligne.",
+                "Silver avec Databricks Auto Loader : dédoublonnage, noms en majuscules, catégorie de durée des titres, écriture Delta sous Unity Catalog.",
+                "Gold avec Delta Live Tables et create_auto_cdc_flow : dimensions en SCD 2, faits en SCD 1, règle qualité user_id IS NOT NULL.",
+                "Alerte e-mail par Azure Logic Apps avec le nom du pipeline et l'identifiant du run, requêtes d'analyse générées avec Jinja2."
+            ],
+            en: [
+                "Azure SQL database as a star schema: FactStream (plays) and four dimensions (subscribers, artists, tracks, dates), 2,865 initial rows then 470 incremental rows.",
+                "A single ADF pipeline driven by loop_input.json (read from GitHub): a ForEach loop loads all 5 tables with the same logic.",
+                "Watermark-based incremental loading: one cdc.json file per table in Bronze, a cdc_col > last watermark query, then MAX(cdc_col) to move the state forward.",
+                "Empty Parquet files deleted automatically when a run finds no new rows.",
+                "Silver with Databricks Auto Loader: deduplication, upper-cased names, track duration category, Delta writes under Unity Catalog.",
+                "Gold with Delta Live Tables and create_auto_cdc_flow: SCD 2 dimensions, SCD 1 facts, a user_id IS NOT NULL quality rule.",
+                "E-mail alert through Azure Logic Apps with the pipeline name and run ID, analysis queries generated with Jinja2."
+            ]
+        },
+        metrics: [
+            { value: "1", label: { fr: "pipeline pour 5 tables", en: "pipeline for 5 tables" } },
+            { value: "470", label: { fr: "lignes au 2e run (sur 3 335)", en: "rows on the 2nd run (out of 3,335)" } },
+            { value: "SCD 2", label: { fr: "sur les dimensions Gold", en: "on Gold dimensions" } },
+            { value: "3", label: { fr: "couches Bronze, Silver, Gold", en: "layers: Bronze, Silver, Gold" } }
+        ],
+        stack: ["Azure Data Factory", "Azure SQL", "ADLS Gen2", "Databricks", "Auto Loader", "Delta Live Tables", "Unity Catalog", "PySpark", "Logic Apps", "Jinja2"],
+        images: [
+            { file: "01-architecture.webp", caption: { fr: "Architecture globale : Azure SQL, ADF, Bronze, Silver, Gold", en: "Overall architecture: Azure SQL, ADF, Bronze, Silver, Gold" } },
+            { file: "02-pipeline-adf.webp", caption: { fr: "Pipeline ADF incremental_loop : une boucle, un filigrane par table", en: "ADF incremental_loop pipeline: one loop, one watermark per table" } },
+            { file: "03-modele-etoile.webp", caption: { fr: "Modèle en étoile et colonnes CDC", en: "Star schema and CDC columns" } },
+            { file: "04-bronze-silver-gold.webp", caption: { fr: "Transformations Databricks de Bronze à Gold", en: "Databricks transformations from Bronze to Gold" } }
+        ]
+    },
+    {
         id: "lakebase",
         group: "data",
         featured: true,

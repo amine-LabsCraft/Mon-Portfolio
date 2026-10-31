@@ -13,6 +13,73 @@ const DOC = (id, doc) => { window.PORTFOLIO_DOCS[id] = doc; };
 
 /* ===================== Data engineering & Cloud ===================== */
 
+DOC("spotify-pipeline", {
+    context: {
+        fr: "Une application de streaming musical enregistre ses abonnés, artistes, titres et chaque écoute dans une base Azure SQL. Pour analyser ces données sans charger la production, il faut les amener dans un lakehouse et suivre leurs changements dans le temps.",
+        en: "A music streaming app stores its subscribers, artists, tracks and every play in an Azure SQL database. To analyse this data without loading production, it has to be brought into a lakehouse and its changes tracked over time."
+    },
+    pains: {
+        fr: ["Recopier toutes les tables à chaque exécution coûte cher et devient impossible quand les volumes grandissent.", "Un pipeline par table multiplie le code à maintenir : 5 tables aujourd'hui, 50 demain.", "Les dimensions changent (abonnement, nom d'un titre) : écraser les lignes fausse les analyses passées."],
+        en: ["Copying every table on each run is costly and becomes impossible as volumes grow.", "One pipeline per table multiplies the code to maintain: 5 tables today, 50 tomorrow.", "Dimensions change (subscription, track name): overwriting rows skews past analyses."]
+    },
+    solution: { fr: "Un pipeline ADF unique piloté par métadonnées, un filigrane par table, puis Auto Loader et Delta Live Tables en SCD 2 sur Databricks.", en: "A single metadata-driven ADF pipeline, one watermark per table, then Auto Loader and Delta Live Tables with SCD 2 on Databricks." },
+    result: { fr: "Le 2e run ne transfère que les 470 lignes modifiées, et les dimensions Gold gardent chaque version des lignes.", en: "The 2nd run moves only the 470 changed rows, and Gold dimensions keep every version of each row." },
+    steps: [
+        { title: { fr: "Préparer la source", en: "Prepare the source" }, text: { fr: "Schéma en étoile dans Azure SQL : FactStream et quatre dimensions. Un script charge 2 865 lignes, un second en ajoute ou modifie 470 pour tester l'incrémental.", en: "Star schema in Azure SQL: FactStream and four dimensions. One script loads 2,865 rows, a second adds or changes 470 to test incremental loading." }, tech: ["Azure SQL"] },
+        { title: { fr: "Piloter par métadonnées", en: "Drive by metadata" }, text: { fr: "loop_input.json décrit chaque table (schéma, nom, colonne CDC, date de reprise). ADF le lit sur GitHub via un service lié HTTP et boucle dessus avec ForEach.", en: "loop_input.json describes each table (schema, name, CDC column, restart date). ADF reads it from GitHub through an HTTP linked service and loops over it with ForEach." }, tech: ["Azure Data Factory", "GitHub"] },
+        { title: { fr: "Charger en incrémental", en: "Load incrementally" }, text: { fr: "Lookup du dernier filigrane dans cdc.json, copie des lignes où cdc_col dépasse ce filigrane vers Bronze en Parquet. Si des lignes arrivent, MAX(cdc_col) devient le nouveau filigrane ; sinon le fichier vide est supprimé.", en: "Lookup of the last watermark in cdc.json, copy of rows where cdc_col exceeds it to Bronze as Parquet. If rows arrive, MAX(cdc_col) becomes the new watermark; otherwise the empty file is deleted." }, tech: ["Azure Data Factory", "ADLS Gen2", "Parquet"] },
+        { title: { fr: "Nettoyer en Silver", en: "Clean in Silver" }, text: { fr: "Auto Loader lit uniquement les nouveaux fichiers (checkpoint par table) : dédoublonnage par clé, user_name en majuscules, durationFlag low / medium / high sur les titres, suppression de _rescued_data.", en: "Auto Loader reads only new files (one checkpoint per table): deduplication by key, upper-cased user_name, low / medium / high durationFlag on tracks, _rescued_data dropped." }, tech: ["Auto Loader", "PySpark", "Unity Catalog"] },
+        { title: { fr: "Historiser en Gold", en: "Historise in Gold" }, text: { fr: "Delta Live Tables avec create_auto_cdc_flow : dimuser, dimtrack et dimdate en SCD 2 (l'ancienne version est conservée), factstream en SCD 1. dimuser écarte les lignes sans user_id.", en: "Delta Live Tables with create_auto_cdc_flow: dimuser, dimtrack and dimdate as SCD 2 (the old version is kept), factstream as SCD 1. dimuser drops rows without a user_id." }, tech: ["Delta Live Tables", "Databricks"] },
+        { title: { fr: "Superviser et analyser", en: "Monitor and analyse" }, text: { fr: "En fin de boucle, ADF appelle un Logic App qui envoie un e-mail avec le nom du pipeline et le Run ID. Un gabarit Jinja2 génère les requêtes de jointure fait / dimensions.", en: "At the end of the loop, ADF calls a Logic App that sends an e-mail with the pipeline name and run ID. A Jinja2 template generates the fact / dimension join queries." }, tech: ["Logic Apps", "Jinja2"] }
+    ],
+    map: {
+        zones: [
+            { id: "src", title: { fr: "Source", en: "Source" }, nodes: [
+                { id: "sql", name: "Azure SQL", tech: "Azure SQL", note: { fr: "5 tables en étoile", en: "5 star-schema tables" } },
+                { id: "cfg", name: "loop_input.json", tech: "GitHub", note: { fr: "Liste des tables", en: "Table list" } }
+            ] },
+            { id: "orch", title: { fr: "Orchestration", en: "Orchestration" }, nodes: [
+                { id: "adf", name: "Data Factory", tech: "Azure Data Factory", note: { fr: "ForEach incrémental", en: "Incremental ForEach" } },
+                { id: "logic", name: "Logic Apps", tech: "Logic Apps", note: { fr: "E-mail d'alerte", en: "Alert e-mail" } }
+            ] },
+            { id: "bronze", title: { fr: "Bronze · ADLS Gen2", en: "Bronze · ADLS Gen2" }, nodes: [
+                { id: "raw", name: "Parquet bruts", tech: "Parquet", note: { fr: "Un dossier par table", en: "One folder per table" } },
+                { id: "state", name: "cdc.json", tech: "ADLS Gen2", note: { fr: "Filigrane par table", en: "Watermark per table" } }
+            ] },
+            { id: "dbx", title: { fr: "Databricks", en: "Databricks" }, nodes: [
+                { id: "silver", name: "Silver", tech: "Auto Loader", note: { fr: "Nettoyage, Delta", en: "Cleaning, Delta" } },
+                { id: "gold", name: "Gold", tech: "Delta Live Tables", note: { fr: "SCD 1 et SCD 2", en: "SCD 1 and SCD 2" } },
+                { id: "uc", name: "Unity Catalog", tech: "Unity Catalog", note: { fr: "spotify_cata", en: "spotify_cata" } }
+            ] }
+        ],
+        links: [
+            { from: "cfg", to: "adf", label: { fr: "tables", en: "tables" }, kind: "control" },
+            { from: "sql", to: "adf", label: { fr: "lignes > filigrane", en: "rows > watermark" }, kind: "data" },
+            { from: "state", to: "adf", label: { fr: "dernier cdc", en: "last cdc" }, kind: "control" },
+            { from: "adf", to: "raw", label: { fr: "Parquet", en: "Parquet" }, kind: "data" },
+            { from: "adf", to: "logic", label: { fr: "fin de run", en: "end of run" }, kind: "monitor" },
+            { from: "raw", to: "silver", label: { fr: "Auto Loader", en: "Auto Loader" }, kind: "data" },
+            { from: "silver", to: "gold", label: { fr: "Auto CDC", en: "Auto CDC" }, kind: "data" },
+            { from: "uc", to: "gold", label: { fr: "droits", en: "access" }, kind: "control" }
+        ]
+    },
+    decisions: [
+        { choice: { fr: "Un pipeline générique plutôt qu'un pipeline par table", en: "One generic pipeline instead of one per table" }, why: { fr: "Ajouter une table revient à ajouter une ligne dans loop_input.json ; la logique incrémentale n'existe qu'à un seul endroit.", en: "Adding a table means adding one entry to loop_input.json; the incremental logic lives in one place only." } },
+        { choice: { fr: "Un filigrane cdc.json par table, stocké dans le lac", en: "One cdc.json watermark per table, stored in the lake" }, why: { fr: "Chaque table avance à son rythme : l'échec de FactStream ne bloque pas DimUser, et l'état reste lisible.", en: "Each table moves at its own pace: a FactStream failure does not block DimUser, and the state stays readable." } },
+        { choice: { fr: "Auto Loader avec trigger(once=True)", en: "Auto Loader with trigger(once=True)" }, why: { fr: "Le coût d'un batch, mais seuls les nouveaux fichiers sont lus grâce au checkpoint.", en: "The cost of a batch, but only new files are read thanks to the checkpoint." } },
+        { choice: { fr: "SCD 2 pour les dimensions, SCD 1 pour les faits", en: "SCD 2 for dimensions, SCD 1 for facts" }, why: { fr: "On garde l'historique là où il a un sens métier (abonnement, titre) et une seule version des écoutes.", en: "History is kept where it matters to the business (subscription, track) and a single version of plays." } },
+        { choice: { fr: "Unity Catalog plutôt que des montages", en: "Unity Catalog instead of mounts" }, why: { fr: "Accès au stockage par External Locations et identité managée : aucune clé de compte dans les notebooks.", en: "Storage access through External Locations and a managed identity: no account key in notebooks." } }
+    ],
+    results: {
+        fr: ["Le 2e run ne rapatrie que 470 lignes sur 3 335, et un run sans nouveauté ne laisse aucun fichier vide.", "Les dimensions Gold conservent chaque version des abonnés et des titres modifiés.", "Une table de plus ne demande qu'une ligne de configuration côté ADF."],
+        en: ["The 2nd run brings back only 470 of 3,335 rows, and a run with nothing new leaves no empty file.", "Gold dimensions keep every version of changed subscribers and tracks.", "One more table needs only one configuration entry on the ADF side."]
+    },
+    next: {
+        fr: ["Le filigrane repose sur une colonne de date : les suppressions côté source ne sont pas détectées ; le CDC natif de SQL Server les capterait.", "Enchaîner ADF, Silver et Gold dans un seul job planifié.", "Ajouter une table Gold pour dimartist et limiter l'alerte aux runs en échec."],
+        en: ["The watermark relies on a date column, so source deletions are not detected; native SQL Server CDC would capture them.", "Chain ADF, Silver and Gold in a single scheduled job.", "Add a Gold table for dimartist and limit the alert to failed runs."]
+    }
+});
+
 DOC("lakebase", {
     context: {
         fr: "Les applications et les agents IA écrivent dans une base transactionnelle (OLTP), tandis que la BI et le ML lisent un lakehouse analytique (OLAP). Les deux mondes sont d'habitude reliés par des pipelines ETL et des copies.",
@@ -1254,7 +1321,7 @@ DOC("botola-pro", {
 
 /* Noms de composants à traduire en anglais (les autres noms sont des noms propres). */
 window.PORTFOLIO_DOCS_EN_NAMES = {
-    "Agents IA": "AI agents", "Stockage objet": "Object storage", "Agrégation": "Aggregation", "Producteur": "Producer",
+    "Agents IA": "AI agents", "Parquet bruts": "Raw Parquet", "Stockage objet": "Object storage", "Agrégation": "Aggregation", "Producteur": "Producer",
     "Consommateur": "Consumer", "Faits courses": "Ride facts", "Zone brute": "Raw zone", "Zone enrichie": "Enriched zone",
     "Pool dédié": "Dedicated pool", "Jeton SAS": "SAS token", "Conteneur source": "Source container", "Zone reporting": "Reporting zone",
     "Table analytique": "Analytical table", "Visualisations": "Visualisations", "Rapport": "Report", "App web": "Web app",

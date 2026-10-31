@@ -80,7 +80,8 @@
         "unity catalog": "databricks", "diffusiongemma": "google", "kafka ui": "kafka-icon", "seaborn": "python",
         "datacamp": "datacamp", "coursera": "coursera", "java": "java", "polars": "polars",
         "microsoft": "microsoft", "meta": "meta-icon", "bigquery": "gcp", "ibm": "ibm", "cisco": "cisco",
-        "oracle": "oracle", "nvidia": "nvidia", "apache": "apache", "snowflake": "snowflake-icon"
+        "oracle": "oracle", "nvidia": "nvidia", "apache": "apache", "snowflake": "snowflake-icon",
+        "azure sql": "azure-sql", "logic apps": AZURE, "auto loader": "databricks", "delta live tables": "databricks"
     };
 
     function techLogo(name) {
