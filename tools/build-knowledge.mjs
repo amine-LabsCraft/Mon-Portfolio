@@ -146,6 +146,25 @@ add({ title: "Certifications", url: "index.html#certifications" },
     `Amine a ${certificates.length} certifications au total : ${Object.entries(CAT).map(([c, l]) => `${certificates.filter((x) => x.category === c).length} en ${l}`).join(", ")}. Émetteurs : DataCamp, Coursera (Google, IBM, University of Michigan, Vanderbilt, University of Colorado Boulder), 365 Data Science, Microsoft, Cisco Networking Academy.`,
     { kind: "certs" });
 
+/* 4 bis. Domaines (pages domain.html) : points forts et compétences appliquées. */
+const { PORTFOLIO_DOMAINS: domains = [], PORTFOLIO_EXPERIENCES: experiences = [] } = loadData("data/domains.js");
+const DOMAIN_NAMES = { data: "Data engineering", cloud: "Cloud & lakehouse", ai: "AI engineering", ml: "Machine learning", bi: "Analytics & BI", ops: "Exploitation (Ops)" };
+for (const d of domains) {
+    const wanted = new Set(d.skills.map((s) => s.toLowerCase()));
+    const used = (list) => list.filter((s) => wanted.has(s.toLowerCase()));
+    const skillsApplied = [...new Set([
+        ...projects.flatMap((p) => used(p.stack)),
+        ...certificates.flatMap((c) => used(c.skills || [])),
+        ...experiences.flatMap((e) => used(e.skills))
+    ])];
+    const byId = (id) => projects.find((p) => p.id === id)?.title || id;
+    add({ title: `Domaine : ${DOMAIN_NAMES[d.id] || d.id}`, url: `domain.html?id=${d.id}` }, [
+        `Domaine ${DOMAIN_NAMES[d.id] || d.id} : ${fr(d.intro)}`,
+        `Points forts : ${d.strengths.map((s) => `${fr(s.title)} — ${fr(s.text)} (démontré dans ${s.proof.map(byId).join(", ")})`).join(" ")}`,
+        `Compétences appliquées dans des projets, formations ou expériences : ${skillsApplied.join(", ")}.`
+    ].join("\n"), { kind: "domain" });
+}
+
 /* 5. Vue d'ensemble du portfolio, toujours fournie au modèle. */
 add({ title: "Portfolio", url: "index.html#projets" },
     `Le portfolio présente ${projects.length} projets. ` + Object.entries(GROUPS).map(([g, l]) => `${l} : ${projects.filter((p) => p.group === g).map((p) => p.title).join(", ")}`).join(". ") + ".",

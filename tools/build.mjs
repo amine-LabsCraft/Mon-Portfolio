@@ -19,7 +19,7 @@ execFileSync(process.execPath, [path.join(ROOT, "tools/build-knowledge.mjs")], {
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(path.join(DIST, "images"), { recursive: true });
 
-const files = ["index.html", "project.html", "style.css", "i18n.js", "common.js", "script.js", "project.js", "assistant.js", "favicon.svg", "CV___Amine_AIT ALI .pdf", "images/Mon Image.jpg"];
+const files = ["index.html", "project.html", "domain.html", "domain.js", "style.css", "i18n.js", "common.js", "script.js", "project.js", "assistant.js", "favicon.svg", "CV___Amine_AIT ALI .pdf", "images/Mon Image.jpg"];
 const folders = ["data", "images/projects", "images/logos", "images/tech", "images/certs"];
 for (const f of files) fs.copyFileSync(path.join(ROOT, f), path.join(DIST, f));
 for (const d of folders) fs.cpSync(path.join(ROOT, d), path.join(DIST, d), { recursive: true });

@@ -345,6 +345,16 @@ function renderAll() {
 window.i18n.onChange(renderAll);
 renderAll();
 
+/* index.html?cert=<id> (lien depuis une page domaine) : ouvre directement cette certification. */
+const linkedCert = new URLSearchParams(location.search).get("cert");
+if (linkedCert && certificates.some((c) => c.id === linkedCert)) {
+    certsExpanded = true;
+    renderCertificates();
+    openCertIndex = visibleCerts.findIndex((c) => c.id === linkedCert);
+    renderCertDetail();
+    certDialog.showModal();
+}
+
 /* Nombre de dépôts publics, mis à jour depuis GitHub quand l'API répond. */
 fetch(`https://api.github.com/users/${GITHUB_USER}`)
     .then((r) => (r.ok ? r.json() : null))
