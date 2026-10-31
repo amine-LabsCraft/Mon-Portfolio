@@ -21,10 +21,8 @@ Contact : amineaitalioff.pro@gmail.com · +212 645 240 352 · LinkedIn amine-dat
 - Systèmes et réseaux : administration Linux/Windows, scripting Bash/Python/PowerShell, virtualisation.
 - Gestion de projet et Agile : Git/GitLab, Scrum, Kanban, planification de sprints, suivi des tâches, travail collaboratif.
 
-## Distinctions et événements
-- Mai 2026 : 2e place au hackathon « détection des insiders au sein d'une entreprise » de l'événement DigitalGov 1.0 (ENSA Khouribga), avec l'équipe HR8. Architecture de défense en couches : inspection des flux sortants SMTP/HTTP (DPI, tunneling DNS, base64), LSTM pour détecter les départs silencieux, contrôle d'accès dynamique par attributs (LDAP + logs d'accès), décomposition saisonnière et régression robuste pour les connexions hors horaires, whitelist USB et CASB pour le cloud, Isolation Forest et autoencodeurs pour l'analyse comportementale.
-- Avril 2026 : participation au GITEX 2026 au Maroc (stands data et IA, échanges avec des professionnels de la donnée).
-- À l'ENSA : hackathons, clubs de robotique et de programmation, ateliers sur l'IA et la cybersécurité, football et basketball.
+## Activités à l'ENSA
+- Hackathons, clubs de robotique et de programmation, ateliers sur l'IA et la cybersécurité, football et basketball.
 
 ## Langues
 Arabe (langue maternelle), français (C1, courant), anglais (B1).
