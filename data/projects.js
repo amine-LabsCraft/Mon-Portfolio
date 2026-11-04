@@ -259,6 +259,51 @@ window.PORTFOLIO_PROJECTS = [
         ]
     },
     {
+        id: "powerbi-mcp",
+        group: "ai",
+        title: "Power BI × Claude (MCP)",
+        source: "cloud",
+        post: "https://www.linkedin.com/feed/update/urn:li:activity:7458869781408968706/",
+        categories: ["ai", "data"],
+        updated: "2026-05-09",
+        kind: { fr: "Agent analyste BI", en: "BI analyst agent" },
+        tagline: {
+            fr: "Un serveur MCP qui laisse Claude travailler directement dans Power BI : il lit la structure des données, propose des KPI et écrit les mesures DAX.",
+            en: "An MCP server that lets Claude work directly in Power BI: it reads the data structure, suggests KPIs and writes DAX measures."
+        },
+        problem: {
+            fr: "Un tableau de bord dit ce qui s'est passé, rarement pourquoi ni quoi faire. Il fallait que l'IA puisse explorer le modèle Power BI elle-même pour passer du descriptif à l'explicatif.",
+            en: "A dashboard says what happened, rarely why or what to do. The AI had to be able to explore the Power BI model itself to move from descriptive to explanatory analysis."
+        },
+        built: {
+            fr: [
+                "Serveur MCP en Node.js (SDK Model Context Protocol, schémas Zod) déclaré dans .mcp.json et relié à Power BI Desktop.",
+                "Les capacités de Power BI exposées comme des outils que Claude peut appeler.",
+                "Claude lit la structure du modèle, propose de nouveaux KPI et génère les mesures DAX.",
+                "Tableau de bord « Suivi des ventes » : 2,398 M€ de chiffre d'affaires, 500 commandes, 3 109 articles vendus, filtres par région, statut et période.",
+                "Page d'analyse des annulations : taux par région et par mois, répartition par catégorie et par produit au fil des trimestres."
+            ],
+            en: [
+                "Node.js MCP server (Model Context Protocol SDK, Zod schemas) declared in .mcp.json and connected to Power BI Desktop.",
+                "Power BI capabilities exposed as tools Claude can call.",
+                "Claude reads the model structure, suggests new KPIs and generates DAX measures.",
+                "\"Sales tracking\" dashboard: €2.398M revenue, 500 orders, 3,109 items sold, filters by region, status and period.",
+                "Cancellation analysis page: rates by region and month, breakdown by category and by product across quarters."
+            ]
+        },
+        metrics: [
+            { value: "2,398 M€", label: { fr: "de chiffre d'affaires analysé", en: "revenue analysed" } },
+            { value: "500", label: { fr: "commandes", en: "orders" } },
+            { value: "2", label: { fr: "pages de rapport", en: "report pages" } }
+        ],
+        stack: ["Power BI", "Claude", "MCP", "DAX", "Node.js", "Zod"],
+        images: [
+            { file: "01-suivi-ventes.webp", caption: { fr: "Suivi des ventes : KPI, évolution mensuelle, CA par région et par catégorie", en: "Sales tracking: KPIs, monthly trend, revenue by region and category" } },
+            { file: "02-annulations.webp", caption: { fr: "Commandes annulées : taux par région, catégories et évolution par produit", en: "Cancelled orders: rate by region, categories and trend by product" } },
+            { file: "03-serveur-mcp.webp", caption: { fr: "Le serveur MCP : configuration .mcp.json et server.js", en: "The MCP server: .mcp.json configuration and server.js" } }
+        ]
+    },
+    {
         id: "brainscan",
         group: "ai",
         featured: true,
@@ -295,12 +340,23 @@ window.PORTFOLIO_PROJECTS = [
             ]
         },
         metrics: [
-            { value: "98,96 %", label: { fr: "accuracy en test", en: "test accuracy" } },
-            { value: "1 054", label: { fr: "images de test", en: "test images" } },
+            { value: "98,96 %", label: { fr: "accuracy en test (1 043 / 1 054)", en: "test accuracy (1,043 / 1,054)" } },
+            { value: "~10 ms", label: { fr: "par image sur GPU (~36 ms sur CPU)", en: "per image on GPU (~36 ms on CPU)" } },
+            { value: "24,6 M", label: { fr: "paramètres (ResNet50)", en: "parameters (ResNet50)" } },
             { value: "17/17", label: { fr: "tests réussis", en: "tests passing" } }
         ],
-        stack: ["Python", "PyTorch", "ResNet50", "Grad-CAM", "FastAPI", "Streamlit", "Docker", "Nginx", "pytest", "GitHub Actions"],
+        stack: ["Python", "PyTorch", "ResNet50", "Grad-CAM", "Albumentations", "FastAPI", "Streamlit", "Chart.js", "Docker", "Nginx", "pytest", "GitHub Actions"],
         images: [
+            { file: "03-upload.webp", caption: { fr: "Interface : dépôt d'une IRM, détection automatique d'une image de type IRM", en: "Interface: MRI upload with automatic MRI-like image check" } },
+            { file: "04-diagnostic.webp", caption: { fr: "Résultat : classe prédite, niveau de confiance et probabilités par classe", en: "Result: predicted class, confidence level and per-class probabilities" } },
+            { file: "05-gradcam.webp", caption: { fr: "Grad-CAM : la zone qui a guidé la décision (gliome)", en: "Grad-CAM: the region behind the decision (glioma)" } },
+            { file: "06-gradcam-pituitary.webp", caption: { fr: "Grad-CAM sur une tumeur hypophysaire", en: "Grad-CAM on a pituitary tumour" } },
+            { file: "07-comparaison.webp", caption: { fr: "Mode comparaison : deux IRM analysées côte à côte", en: "Compare mode: two MRIs analysed side by side" } },
+            { file: "08-courbes.webp", caption: { fr: "Courbes de perte et d'accuracy : phase gelée puis fine-tuning", en: "Loss and accuracy curves: frozen stage then fine-tuning" } },
+            { file: "09-matrice-confusion.webp", caption: { fr: "Matrices de confusion : effectifs et rappel par classe", en: "Confusion matrices: counts and per-class recall" } },
+            { file: "10-modele.webp", caption: { fr: "Le modèle : architecture, stratégie et performances", en: "The model: architecture, strategy and performance" } },
+            { file: "11-checkpoint.webp", caption: { fr: "Caractéristiques du checkpoint entraîné", en: "Trained checkpoint characteristics" } },
+            { file: "12-stack.webp", caption: { fr: "Stack technique complète", en: "Full technical stack" } },
             { file: "01-flux.webp", caption: { fr: "Flux de l'application", en: "Application flow" } },
             { file: "02-flux2.webp", caption: { fr: "Chaîne d'inférence", en: "Inference chain" } }
         ]

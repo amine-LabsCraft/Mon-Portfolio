@@ -738,3 +738,10 @@ p { margin: 0; }
 }
 .skill-sources:not(.open) .src-extra { display: none; }
 .src-more { padding: 2px 8px; color: var(--blue); background: var(--blue-soft); border: 0; border-radius: 6px; font: inherit; font-size: 13px; font-weight: 700; line-height: 1.5; cursor: pointer; }
+
+/* ============ Page stage ============ */
+.experience-org { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.experience-org img { width: 40px; height: 40px; border-radius: 10px; object-fit: contain; background: #fff; }
+.role .text-link { display: inline-flex; gap: 6px; margin-top: 12px; font-size: 14px; }
+.pager-single { grid-template-columns: 1fr; }
+.pager-single a:last-child { text-align: left; }

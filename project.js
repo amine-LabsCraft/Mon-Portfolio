@@ -2,14 +2,20 @@
 (() => {
     const { t, pick } = window.i18n;
     const { escapeHtml, techChip, techIcon, architecture, projectTitle, formatDate, orderedProjects, capToNaturalSize } = window.portfolio;
-    const projects = window.PORTFOLIO_PROJECTS;
+    /* experience.html réutilise cette page pour les stages (data/internships.js). */
+    const isExperience = document.body.dataset.collection === "experiences";
+    const projects = isExperience ? window.PORTFOLIO_INTERNSHIPS : window.PORTFOLIO_PROJECTS;
     const docs = window.PORTFOLIO_DOCS || {};
     const main = document.querySelector("#contenu");
     const id = new URLSearchParams(location.search).get("id");
+    const imageDir = isExperience ? "images/experiences" : "images/projects";
+    const page = isExperience ? "experience.html" : "project.html";
+    /* Libellé propre aux stages (x.*) s'il existe, sinon celui des projets (p.*). */
+    const label = (key) => (isExperience && t(`x.${key}`) !== `x.${key}` ? t(`x.${key}`) : t(`p.${key}`));
     let archView = "map";
 
-    /* Même ordre que sur l'accueil : Data engineering, IA & ML, puis Software. */
-    const ordered = orderedProjects(projects);
+    /* Même ordre que sur l'accueil : Data engineering, IA & ML, puis Software. Les stages gardent leur ordre. */
+    const ordered = isExperience ? projects : orderedProjects(projects);
     const list = (items) => (pick(items) || []);
     /* Nom affiché d'un composant de la carte, traduit si besoin. */
     const nodeLabel = (name) => (window.i18n.language === "en" && window.PORTFOLIO_DOCS_EN_NAMES?.[name]) || name;
@@ -161,7 +167,7 @@
 
         if (!project) {
             document.title = "Amine AIT ALI";
-            main.innerHTML = `<div class="not-found"><h1>${t("p.notfound")}</h1><a class="button button-primary" href="index.html#projets">${t("p.back")}</a></div>`;
+            main.innerHTML = `<div class="not-found"><h1>${label("notfound")}</h1><a class="button button-primary" href="index.html#${isExperience ? "parcours" : "projets"}">${label("back")}</a></div>`;
             return;
         }
 
@@ -186,8 +192,8 @@
         const images = project.images || [];
         const gallery = images.map((img, i) => `
             <figure class="shot">
-                <button type="button" data-index="${i}" data-src="images/projects/${project.id}/${img.file}" data-caption="${escapeHtml(pick(img.caption))}" aria-label="${escapeHtml(t("p.zoom"))} : ${escapeHtml(pick(img.caption))}">
-                    <img src="images/projects/${project.id}/${img.file}" alt="${escapeHtml(pick(img.caption))}" loading="${i < 2 ? "eager" : "lazy"}" decoding="async">
+                <button type="button" data-index="${i}" data-src="${imageDir}/${project.id}/${img.file}" data-caption="${escapeHtml(pick(img.caption))}" aria-label="${escapeHtml(t("p.zoom"))} : ${escapeHtml(pick(img.caption))}">
+                    <img src="${imageDir}/${project.id}/${img.file}" alt="${escapeHtml(pick(img.caption))}" loading="${i < 2 ? "eager" : "lazy"}" decoding="async">
                     <span class="shot-zoom" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5M11 8v6M8 11h6"/></svg></span>
                 </button>
                 <figcaption><span>${String(i + 1).padStart(2, "0")}</span>${escapeHtml(pick(img.caption))}</figcaption>
@@ -213,13 +219,15 @@
                     ${list(doc.next).length ? `<div class="outcomes-next"><h3 class="sub">${t("p.limits")}</h3><ul class="built">${list(doc.next).map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul></div>` : ""}
                 </div>`],
             ["stack", t("p.stack"), `<ul class="stack stack-large">${project.stack.map(techChip).join("")}</ul>`],
-            gallery && ["gallery", t(project.source === "cloud" ? "p.gallery.cloud" : "p.gallery"), `<div class="gallery">${gallery}</div>`]
+            gallery && ["gallery", isExperience ? label("gallery") : t(project.source === "cloud" ? "p.gallery.cloud" : "p.gallery"), `<div class="gallery">${gallery}</div>`]
         ].filter(Boolean);
 
         main.innerHTML = `
             <article class="study">
                 <header class="study-head">
-                    <p class="case-kind">${t(`group.${project.group}`)} · ${escapeHtml(pick(project.kind))} · ${project.source === "cloud" ? t("p.source.cloud") : t("p.source.github")}${project.updated ? ` · ${t("p.updated")} ${formatDate(project.updated)}` : ""}</p>
+                    ${isExperience
+                        ? `<p class="case-kind experience-org"><img src="${project.logo}" width="40" height="40" alt="">${escapeHtml(project.org)} · ${escapeHtml(pick(project.kind))} · ${escapeHtml(pick(project.period))}</p>`
+                        : `<p class="case-kind">${t(`group.${project.group}`)} · ${escapeHtml(pick(project.kind))} · ${project.source === "cloud" ? t("p.source.cloud") : t("p.source.github")}${project.updated ? ` · ${t("p.updated")} ${formatDate(project.updated)}` : ""}</p>`}
                     <h1>${escapeHtml(title)}</h1>
                     <p class="study-lead">${escapeHtml(pick(project.tagline))}</p>
                     <div class="hero-actions">${actions}</div>
@@ -243,10 +251,10 @@
                     </div>
                 </div>
 
-                <nav class="pager" aria-label="${escapeHtml(t("nav.projects"))}">
-                    <a href="project.html?id=${prev.id}"><span>${t("p.prev")}</span><strong>${escapeHtml(projectTitle(prev))}</strong></a>
-                    <a href="project.html?id=${next.id}"><span>${t("p.next")}</span><strong>${escapeHtml(projectTitle(next))}</strong></a>
-                </nav>
+                ${ordered.length > 1 ? `<nav class="pager${ordered.length === 2 ? " pager-single" : ""}" aria-label="${escapeHtml(isExperience ? label("nav") : t("nav.projects"))}">
+                    ${ordered.length > 2 ? `<a href="${page}?id=${prev.id}"><span>${label("prev")}</span><strong>${escapeHtml(projectTitle(prev))}</strong></a>` : ""}
+                    <a href="${page}?id=${next.id}"><span>${ordered.length > 2 ? label("next") : isExperience ? label("other") : label("next")}</span><strong>${escapeHtml(projectTitle(next))}</strong></a>
+                </nav>` : ""}
             </article>`;
 
         requestAnimationFrame(drawMap);

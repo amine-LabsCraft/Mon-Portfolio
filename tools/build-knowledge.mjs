@@ -146,6 +146,19 @@ add({ title: "Certifications", url: "index.html#certifications" },
     `Amine a ${certificates.length} certifications au total : ${Object.entries(CAT).map(([c, l]) => `${certificates.filter((x) => x.category === c).length} en ${l}`).join(", ")}. Émetteurs : DataCamp, Coursera (Google, IBM, University of Michigan, Vanderbilt, University of Colorado Boulder), 365 Data Science, Microsoft, Cisco Networking Academy.`,
     { kind: "certs" });
 
+/* 3 ter. Stages (pages experience.html) : présentation et documentation détaillée. */
+const { PORTFOLIO_INTERNSHIPS: internships = [], PORTFOLIO_DOCS: internshipDocs = {} } = loadData("data/internships.js");
+for (const x of internships) {
+    add({ title: `Stage : ${x.org}`, url: `experience.html?id=${x.id}` }, [
+        `Stage ${x.org} — ${fr(x.title)} (${fr(x.kind)}, ${fr(x.period)}).`,
+        `Résumé : ${fr(x.tagline)}`,
+        `Enjeu : ${fr(x.problem)}`,
+        x.metrics?.length ? `Chiffres clés : ${x.metrics.map((m) => `${m.value} ${fr(m.label)}`).join(", ")}.` : "",
+        `Stack : ${x.stack.join(", ")}.`,
+        docText(internshipDocs[x.id])
+    ].filter(Boolean).join("\n"), { kind: "experience" });
+}
+
 /* 4 bis. Domaines (pages domain.html) : points forts et compétences appliquées. */
 const { PORTFOLIO_DOMAINS: domains = [], PORTFOLIO_EXPERIENCES: experiences = [] } = loadData("data/domains.js");
 const DOMAIN_NAMES = { data: "Data engineering", cloud: "Cloud & lakehouse", ai: "AI engineering", ml: "Machine learning", bi: "Analytics & BI", ops: "Exploitation (Ops)" };

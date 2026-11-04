@@ -763,10 +763,61 @@ DOC("brainscan", {
         { choice: { fr: "Grad-CAM systématique", en: "Systematic Grad-CAM" }, why: { fr: "En médical, l'effet boîte noire est proscrit : le praticien voit où le modèle regarde.", en: "In medicine, a black box is unacceptable: the practitioner sees where the model looks." } }
     ],
     results: {
-        fr: ["98,96 % d'accuracy sur 1 054 images de test.", "Inférence d'environ 36 ms par image sur CPU et 10 ms sur GPU.", "17 tests réussis, CI et image Docker prête à déployer."],
-        en: ["98.96% accuracy on 1,054 test images.", "Inference around 36 ms per image on CPU and 10 ms on GPU.", "17 passing tests, CI and a deploy-ready Docker image."]
+        fr: ["98,96 % d'accuracy sur 1 054 images de test (1 043 bien classées).", "Rappel par classe : 97,9 % gliome, 98,8 % méningiome, 99,7 % sans tumeur, 99,2 % hypophysaire.", "Inférence d'environ 36 ms par image sur CPU et 10 ms sur GPU.", "Une interface complète : dépôt d'IRM, carte Grad-CAM réglable, mode comparaison, analyse par lot, export PNG et PDF.", "17 tests réussis, CI et image Docker prête à déployer."],
+        en: ["98.96% accuracy on 1,054 test images (1,043 correctly classified).", "Per-class recall: 97.9% glioma, 98.8% meningioma, 99.7% no tumour, 99.2% pituitary.", "Inference around 36 ms per image on CPU and 10 ms on GPU.", "A complete interface: MRI upload, adjustable Grad-CAM map, compare mode, batch analysis, PNG and PDF export.", "17 passing tests, CI and a deploy-ready Docker image."]
     },
     next: { fr: ["Outil pédagogique : aucune valeur de diagnostic médical."], en: ["Educational tool: no medical diagnostic value."] }
+});
+
+DOC("powerbi-mcp", {
+    context: {
+        fr: "Dans Power BI, l'analyste construit seul ses pages, ses mesures et ses KPI. J'ai voulu voir ce que change un agent IA qui peut agir directement dans le rapport grâce au Model Context Protocol (MCP).",
+        en: "In Power BI, analysts build their pages, measures and KPIs on their own. I wanted to see what changes when an AI agent can act directly in the report through the Model Context Protocol (MCP)."
+    },
+    pains: {
+        fr: ["Un tableau de bord répond à « que s'est-il passé ? », rarement à « pourquoi ? » et « que faire ? ».", "Écrire des mesures DAX complexes prend du temps et demande de l'expertise.", "Certains segments intéressants (anomalies, annulations par région) passent inaperçus."],
+        en: ["A dashboard answers \"what happened?\", rarely \"why?\" or \"what now?\".", "Writing complex DAX measures takes time and expertise.", "Some interesting segments (anomalies, cancellations by region) go unnoticed."]
+    },
+    solution: { fr: "Un serveur MCP qui expose Power BI comme une boîte à outils pour Claude, qui devient un agent analyste intégré au rapport.", en: "An MCP server that exposes Power BI as a toolbox for Claude, which becomes an analyst agent built into the report." },
+    result: { fr: "Deux pages de rapport (ventes et annulations) construites avec Claude, qui propose les KPI et écrit les mesures DAX.", en: "Two report pages (sales and cancellations) built with Claude, which suggests KPIs and writes the DAX measures." },
+    steps: [
+        { title: { fr: "Écrire le serveur MCP", en: "Write the MCP server" }, text: { fr: "Un serveur Node.js avec le SDK officiel Model Context Protocol et des schémas Zod pour valider chaque appel d'outil.", en: "A Node.js server with the official Model Context Protocol SDK and Zod schemas to validate every tool call." }, tech: ["Node.js", "MCP", "Zod"] },
+        { title: { fr: "Le brancher à Claude et Power BI", en: "Connect it to Claude and Power BI" }, text: { fr: "Le fichier .mcp.json déclare le serveur et le chemin de Power BI Desktop ; Claude découvre alors les outils disponibles.", en: "The .mcp.json file declares the server and the Power BI Desktop path; Claude then discovers the available tools." }, tech: ["Claude", "Power BI"] },
+        { title: { fr: "Laisser l'IA explorer", en: "Let the AI explore" }, text: { fr: "Claude lit la structure des données, repère les tendances (ventes par mois, annulations par région) et propose des KPI.", en: "Claude reads the data structure, spots trends (sales by month, cancellations by region) and suggests KPIs." }, tech: ["Claude"] },
+        { title: { fr: "Générer les mesures et les pages", en: "Generate measures and pages" }, text: { fr: "Les calculs DAX et la structure des pages d'analyse sont produits avec l'IA puis vérifiés dans le rapport.", en: "DAX calculations and the layout of the analysis pages are produced with the AI, then checked in the report." }, tech: ["DAX", "Power BI"] }
+    ],
+    map: {
+        zones: [
+            { id: "user", title: { fr: "Analyste", en: "Analyst" }, nodes: [
+                { id: "me", name: "Question métier", note: { fr: "En langage naturel", en: "In plain language" } }
+            ] },
+            { id: "agent", title: { fr: "Agent", en: "Agent" }, nodes: [
+                { id: "claude", name: "Claude", tech: "Claude", note: { fr: "Raisonne et choisit l'outil", en: "Reasons, picks the tool" } }
+            ] },
+            { id: "server", title: { fr: "Serveur MCP", en: "MCP server" }, nodes: [
+                { id: "mcp", name: "server.js", tech: "MCP", note: { fr: "Outils Power BI", en: "Power BI tools" } }
+            ] },
+            { id: "bi", title: { fr: "Power BI Desktop", en: "Power BI Desktop" }, nodes: [
+                { id: "model", name: "Modèle de données", tech: "Power BI", note: { fr: "Tables, mesures DAX", en: "Tables, DAX measures" } },
+                { id: "report", name: "Rapport", tech: "Power BI", note: { fr: "Ventes, annulations", en: "Sales, cancellations" } }
+            ] }
+        ],
+        links: [
+            { from: "me", to: "claude", label: { fr: "question", en: "question" }, kind: "data" },
+            { from: "claude", to: "mcp", label: { fr: "appel d'outil", en: "tool call" }, kind: "control" },
+            { from: "mcp", to: "model", label: { fr: "lecture, DAX", en: "read, DAX" }, kind: "data" },
+            { from: "model", to: "report", label: { fr: "visuels", en: "visuals" }, kind: "data" }
+        ]
+    },
+    decisions: [
+        { choice: { fr: "Passer par le protocole MCP", en: "Use the MCP protocol" }, why: { fr: "Un standard ouvert : le même serveur peut servir à d'autres assistants compatibles, sans code spécifique à chacun.", en: "An open standard: the same server can serve other compatible assistants, with no assistant-specific code." } },
+        { choice: { fr: "Valider chaque appel avec Zod", en: "Validate every call with Zod" }, why: { fr: "L'IA ne peut envoyer que des paramètres du bon format : les erreurs sont bloquées avant d'atteindre Power BI.", en: "The AI can only send well-formed parameters: errors are blocked before they reach Power BI." } }
+    ],
+    results: {
+        fr: ["Un rapport « Suivi des ventes » : 2,398 M€ de chiffre d'affaires, 500 commandes, 3 109 articles, 4 795,9 € de panier moyen.", "Une page dédiée aux annulations, avec le taux par région et l'évolution par produit.", "Une boucle où l'IA devient un vrai « agent analyste » dans l'outil."],
+        en: ["A \"Sales tracking\" report: €2.398M revenue, 500 orders, 3,109 items, €4,795.9 average order.", "A page dedicated to cancellations, with the rate by region and trend by product.", "A loop where the AI becomes a real \"analyst agent\" inside the tool."]
+    },
+    next: { fr: ["Données de démonstration (année 2023) ; à brancher sur une source réelle."], en: ["Demo data (year 2023); to be connected to a real source."] }
 });
 
 DOC("ai-data-agent", {

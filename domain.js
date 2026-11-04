@@ -52,7 +52,7 @@
     const sourceLink = ({ type, item }) => {
         if (type === "project") return `<a class="src src-project" href="project.html?id=${item.id}">${escapeHtml(projectTitle(item))}</a>`;
         if (type === "cert") return `<a class="src src-cert" href="index.html?cert=${encodeURIComponent(item.id)}#certifications">${escapeHtml(certTitle(item))}</a>`;
-        return `<a class="src src-exp" href="index.html#parcours">${escapeHtml(item.org.split(" · ")[0])}</a>`;
+        return `<a class="src src-exp" href="experience.html?id=${item.id}">${escapeHtml(item.org.split(" · ")[0])}</a>`;
     };
 
     function skillCard(skill) {
