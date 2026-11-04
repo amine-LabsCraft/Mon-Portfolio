@@ -52,7 +52,7 @@ window.PORTFOLIO_DOMAINS = [
             "Python", "SQL", "T-SQL", "Spark", "PySpark", "Spark SQL", "Kafka", "Kafka protocol", "ZooKeeper", "Hadoop HDFS", "YARN",
             "Airflow", "Airflow 3", "Celery", "Redis", "dbt", "Delta Lake", "Parquet", "Databricks", "Auto Loader", "Delta Live Tables",
             "Azure Data Factory", "Data Flow", "Metadata-driven", "Azure Event Hubs", "PostgreSQL", "MySQL", "MongoDB", "SQLite", "Azure SQL",
-            "NoSQL", "asyncio", "aiosqlite", "WebSocket", "REST", "requests", "Jinja2", "Pydantic", "Star schema", "Data warehouse", "Database design",
+            "NoSQL", "asyncio", "aiosqlite", "Snowflake", "Data import", "WebSocket", "REST", "requests", "Jinja2", "Pydantic", "Star schema", "Data warehouse", "Database design",
             "Normalization", "ETL / ELT", "Dimensional modeling", "Data modeling", "Data architecture", "Lakehouse", "PolyBase",
             "Window functions", "Joins", "Aggregations", "Data lifecycle"
         ]
@@ -88,7 +88,7 @@ window.PORTFOLIO_DOMAINS = [
         ],
         skills: [
             "Azure", "AWS", "AWS EC2", "ADLS Gen2", "Blob Storage", "Azure Storage", "Azure SQL", "Azure Synapse", "Serverless SQL",
-            "Dedicated SQL pool", "PolyBase", "Azure Data Factory", "Azure Event Hubs", "Logic Apps", "Databricks", "Unity Catalog", "Delta Lake",
+            "Dedicated SQL pool", "PolyBase", "Snowflake", "Azure Data Factory", "Azure Event Hubs", "Logic Apps", "Databricks", "Unity Catalog", "Delta Lake",
             "Delta Live Tables", "Auto Loader", "Lakehouse", "Cloud", "Terraform", "azurerm", "VNet", "NAT Gateway", "Entra ID", "Docker",
             "Docker Compose", "Kubernetes", "Autoscaling", "FinOps", "Supabase", "Azure AI"
         ]
