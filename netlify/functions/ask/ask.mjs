@@ -106,6 +106,7 @@ export async function embedQuery(text) {
 
 async function callModel(messages) {
     let lastError = "no provider configured";
+    const skipped = [];
     for (const provider of PROVIDERS) {
         const key = process.env[provider.key];
         if (!key) continue;
@@ -120,10 +121,12 @@ async function callModel(messages) {
                 body: JSON.stringify({ model: provider.model, messages, temperature: 0.2, max_tokens: 900, stream: true, ...(provider.extra || {}) }),
                 signal: AbortSignal.timeout(25_000)
             });
-            if (response.ok && response.body) return { response, provider: provider.name };
+            if (response.ok && response.body) return { response, provider: provider.name, skipped };
             lastError = `${provider.name} ${response.status}`;
+            skipped.push(lastError);
         } catch (error) {
             lastError = `${provider.name} ${error.name}`;
+            skipped.push(lastError);
         }
     }
     throw new Error(lastError);
@@ -196,7 +199,7 @@ export default async (req, context) => {
         return json(503, { error: "model_unavailable" });
     }
     /* Journal sans contenu de la question : utile pour suivre le routage, la recherche et le fournisseur. */
-    console.log(JSON.stringify({ ev: "ask", lang, routed: routed ? routed.ids : null, dense: Boolean(vector), passages: passages.map((p) => p.id), provider: upstream.provider, retrievalMs: Date.now() - started }));
+    console.log(JSON.stringify({ ev: "ask", lang, routed: routed ? routed.ids : null, dense: Boolean(vector), passages: passages.map((p) => p.id), provider: upstream.provider, skipped: upstream.skipped, retrievalMs: Date.now() - started }));
 
     /* Relais du flux : événements « sources », puis « delta » (texte), puis « done ». */
     const encoder = new TextEncoder();
@@ -225,7 +228,8 @@ export default async (req, context) => {
                         } catch { /* fragment incomplet : ignoré */ }
                     }
                 }
-                send({ type: "done", provider: upstream.provider });
+                /* Diagnostic sans donnée sensible : fournisseurs écartés (code HTTP), recherche sémantique et routeur actifs ou non. */
+                send({ type: "done", provider: upstream.provider, skipped: upstream.skipped, dense: Boolean(vector), routed: Boolean(routed) });
             } catch (error) {
                 send({ type: "error" });
             } finally {
