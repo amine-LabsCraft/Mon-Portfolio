@@ -1,0 +1,67 @@
+[
+  { "q": "Which projects use Kafka?", "expect": ["kafka-hdfs", "uber-streaming", "fraud-telecom"] },
+  { "q": "Quels projets utilisent Kafka ?", "expect": ["kafka-hdfs", "uber-streaming", "fraud-telecom"] },
+  { "q": "What did he do at N+ONE?", "expect": ["url:experience.html?id=n-one"] },
+  { "q": "Qu'a-t-il fait chez OCP ?", "expect": ["url:experience.html?id=ocp"] },
+  { "q": "Has he worked with LLM serving or vLLM?", "expect": ["url:experience.html?id=n-one"] },
+  { "q": "How accurate is his brain tumor model?", "expect": ["brainscan"] },
+  { "q": "Quelle précision pour la détection de tumeurs cérébrales ?", "expect": ["brainscan"] },
+  { "q": "Does he know Terraform?", "expect": ["terraform-azure"] },
+  { "q": "Tell me about his Spotify project", "expect": ["spotify-pipeline"] },
+  { "q": "How does the fraud detection work?", "expect": ["fraud-telecom"] },
+  { "q": "Which certifications does he have in cloud?", "expect": ["kind:certs"] },
+  { "q": "How many certifications?", "expect": ["kind:certs"] },
+  { "q": "Combien de certifications a-t-il ?", "expect": ["kind:certs"] },
+  { "q": "Is he good at machine learning?", "expect": ["url:domain.html?id=ml"] },
+  { "q": "What are his strengths in data engineering?", "expect": ["url:domain.html?id=data"] },
+  { "q": "Quels sont ses points forts en BI ?", "expect": ["url:domain.html?id=bi"] },
+  { "q": "Has he built an MCP server?", "expect": ["mcp-rag-server", "powerbi-mcp"] },
+  { "q": "Can Claude talk to Power BI?", "expect": ["powerbi-mcp"] },
+  { "q": "What languages does he speak?", "expect": ["route:cv-5"] },
+  { "q": "Quelles langues parle-t-il ?", "expect": ["route:cv-5"] },
+  { "q": "What are his hobbies?", "expect": ["route:cv-6"] },
+  { "q": "Experience with dbt and Airflow?", "expect": ["walmart-lakehouse", "url:experience.html?id=ocp", "walmart-streaming-flow"] },
+  { "q": "text-to-SQL agent", "expect": ["ai-data-agent"] },
+  { "q": "agent qui interroge une base de données en langage naturel", "expect": ["ai-data-agent"] },
+  { "q": "Does he do frontend or mobile apps?", "expect": ["burger-queen", "perfume-vmax", "medischool"] },
+  { "q": "real-time crypto prices", "expect": ["cryptopulse"] },
+  { "q": "What is a medallion architecture in his work?", "expect": ["spotify-pipeline", "walmart-lakehouse", "lakebase"] },
+  { "q": "Does he know Unity Catalog?", "expect": ["lakebase", "spotify-pipeline"] },
+  { "q": "blood test analysis app", "expect": ["health-analysis"] },
+  { "q": "Has he used GPUs?", "expect": ["url:experience.html?id=n-one", "brainscan"] },
+  { "q": "What is his best project?", "expect": ["spotify-pipeline", "lakebase", "fraud-telecom", "brainscan", "ai-data-agent", "walmart-streaming-flow"] },
+  { "q": "Did he use graph neural networks?", "expect": ["fraud-telecom"] },
+  { "q": "subtitles generation", "expect": ["streaming-subtitle"] },
+  { "q": "Synapse dedicated pool", "expect": ["synapse-lakehouse"] },
+  { "q": "Excel analysis with local LLM", "expect": ["insightlens"] },
+  { "q": "What's his experience with PostgreSQL?", "expect": ["lakebase", "ai-data-agent", "walmart-lakehouse", "walmart-streaming-flow"] },
+  { "q": "Has he migrated infrastructure from AWS to Azure?", "expect": ["terraform-azure"] },
+  { "q": "Who supervised his N+ONE internship?", "expect": ["url:experience.html?id=n-one"] },
+  { "q": "Quel modèle LLM a été retenu pendant le stage N+ONE ?", "expect": ["url:experience.html?id=n-one"] },
+  { "q": "Has he done any data quality audit?", "expect": ["olist-audit"] },
+  { "q": "Projets avec Flutter ?", "expect": ["burger-queen"] },
+  {
+    "q": "et sa précision ?",
+    "history": [
+      { "role": "user", "content": "Parle-moi de BrainScan AI" },
+      { "role": "assistant", "content": "BrainScan AI classe des IRM cérébrales en quatre classes avec un ResNet50 et explique ses prédictions avec Grad-CAM." }
+    ],
+    "expect": ["brainscan"]
+  },
+  {
+    "q": "which tools did he use there?",
+    "history": [
+      { "role": "user", "content": "What did he do during his internship at OCP?" },
+      { "role": "assistant", "content": "At OCP, Amine built cloud data pipelines." }
+    ],
+    "expect": ["url:experience.html?id=ocp"]
+  },
+  {
+    "q": "and how is it deployed?",
+    "history": [
+      { "role": "user", "content": "Tell me about the mobile fraud detection project" },
+      { "role": "assistant", "content": "It detects fraud in telecom transactions with GraphSAGE and gradient boosting." }
+    ],
+    "expect": ["fraud-telecom"]
+  }
+]

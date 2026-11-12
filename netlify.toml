@@ -2,6 +2,7 @@
 # Variables d'environnement à définir dans Netlify (Site configuration > Environment variables) :
 #   GROQ_API_KEY        clé Groq (obligatoire)
 #   OPENROUTER_API_KEY  clé OpenRouter (optionnelle, secours si Groq est indisponible)
+#   COHERE_API_KEY      clé Cohere (recommandée : recherche sémantique ; aussi utilisée au build pour encoder les nouveaux passages)
 [build]
   command = "node tools/build.mjs"
   publish = "dist"

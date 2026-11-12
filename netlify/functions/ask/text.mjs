@@ -21,7 +21,8 @@ export function normalize(text) {
 }
 
 function stem(word) {
-    if (word.length > 4 && word.endsWith("s") && !word.endsWith("ss")) return word.slice(0, -1);
+    /* Pluriel simple : « gpus » → « gpu », « pipelines » → « pipeline ». */
+    if (word.length > 3 && word.endsWith("s") && !word.endsWith("ss")) return word.slice(0, -1);
     return word;
 }
 

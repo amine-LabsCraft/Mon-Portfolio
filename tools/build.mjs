@@ -1,7 +1,8 @@
 /*
  * Prépare le déploiement en une commande :
  * 1. reconstruit la base de connaissances de l'assistant (netlify/functions/ask/knowledge.mjs) ;
- * 2. recrée dist/ avec uniquement les fichiers publiés par le site.
+ * 2. vérifie la qualité de la recherche (tools/eval-rag.mjs, hors ligne) ;
+ * 3. recrée dist/ avec uniquement les fichiers publiés par le site.
  *
  * Utilisation : node tools/build.mjs
  */
@@ -15,6 +16,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
 
 execFileSync(process.execPath, [path.join(ROOT, "tools/build-knowledge.mjs")], { stdio: "inherit" });
+execFileSync(process.execPath, [path.join(ROOT, "tools/eval-rag.mjs")], { stdio: "inherit" });
 
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(path.join(DIST, "images"), { recursive: true });

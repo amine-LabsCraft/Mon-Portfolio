@@ -16,10 +16,10 @@ const port = Number(process.argv[3] || 8888);
 if (envFile && fs.existsSync(envFile)) {
     for (const line of fs.readFileSync(envFile, "utf8").split(/\r?\n/)) {
         const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*"?([^"\r\n]*)"?\s*$/);
-        if (m && ["GROQ_API_KEY", "OPENROUTER_API_KEY"].includes(m[1]) && !process.env[m[1]]) process.env[m[1]] = m[2];
+        if (m && ["GROQ_API_KEY", "OPENROUTER_API_KEY", "COHERE_API_KEY"].includes(m[1]) && !process.env[m[1]]) process.env[m[1]] = m[2];
     }
 }
-console.log(`Clés chargées : GROQ ${process.env.GROQ_API_KEY ? "oui" : "non"}, OPENROUTER ${process.env.OPENROUTER_API_KEY ? "oui" : "non"}`);
+console.log(`Clés chargées : GROQ ${process.env.GROQ_API_KEY ? "oui" : "non"}, OPENROUTER ${process.env.OPENROUTER_API_KEY ? "oui" : "non"}, COHERE ${process.env.COHERE_API_KEY ? "oui" : "non"}`);
 
 const { default: ask } = await import("../netlify/functions/ask/ask.mjs");
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".webp": "image/webp", ".png": "image/png", ".jpg": "image/jpeg", ".pdf": "application/pdf", ".json": "application/json" };
