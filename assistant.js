@@ -60,6 +60,9 @@
             const item = line.match(/^\s*(?:[-*•]|\d+\.)\s+(.*)/);
             if (item) { if (!inList) { out += "<ul>"; inList = true; } out += `<li>${item[1]}</li>`; continue; }
             if (inList) { out += "</ul>"; inList = false; }
+            /* Un titre markdown éventuel devient une ligne en gras, plutôt qu'un « ### » brut. */
+            const heading = line.match(/^\s*#{1,4}\s+(.*)/);
+            if (heading) { out += `<p><strong>${heading[1]}</strong></p>`; continue; }
             if (line.trim()) out += `<p>${line}</p>`;
         }
         return inList ? `${out}</ul>` : out;
@@ -76,14 +79,21 @@
         return `<div class="ai-sources"><span>${t("ai.sources")}</span>${unique.map((s) => `<a href="${escapeHtml(s.url)}">${escapeHtml(s.title)}</a>`).join("")}</div>`;
     }
 
+    const chips = (list) => `<div class="ai-suggestions">${list.map((q) => `<button type="button">${escapeHtml(q)}</button>`).join("")}</div>`;
+
     function render() {
         if (!messages.length) {
-            log.innerHTML = `<div class="ai-empty"><p>${t("ai.empty")}</p><div class="ai-suggestions">${SUGGESTIONS[window.i18n.language].map((q) => `<button type="button">${escapeHtml(q)}</button>`).join("")}</div></div>`;
+            log.innerHTML = `<div class="ai-empty"><p>${t("ai.empty")}</p>${chips(SUGGESTIONS[window.i18n.language])}</div>`;
             return;
         }
         log.innerHTML = messages.map((m) => m.role === "user"
             ? `<div class="ai-msg ai-user">${escapeHtml(m.content)}</div>`
             : `<div class="ai-msg ai-bot${m.error ? " ai-error" : ""}">${m.content ? format(m.content, m.sources) : '<span class="ai-typing"><i></i><i></i><i></i></span>'}${m.content && !m.error ? sourcesHtml(m.content, m.sources) : ""}</div>`).join("");
+        /* Relances proposées par l'assistant sous sa dernière réponse : elles suivent le sujet de la conversation. */
+        const last = messages[messages.length - 1];
+        if (!busy && last.role === "assistant" && !last.error && last.next?.length) {
+            log.insertAdjacentHTML("beforeend", `<div class="ai-next"><span>${t("ai.next")}</span>${chips(last.next)}</div>`);
+        }
         log.scrollTop = log.scrollHeight;
     }
 
@@ -125,6 +135,7 @@
                     const data = JSON.parse(line.slice(5));
                     if (data.type === "sources") answer.sources = data.sources;
                     if (data.type === "delta") { answer.content += data.text; render(); }
+                    if (data.type === "suggestions" && Array.isArray(data.items)) answer.next = data.items.filter((q) => typeof q === "string").slice(0, 3);
                     if (data.type === "error") throw new Error("stream");
                 }
             }
