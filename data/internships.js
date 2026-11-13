@@ -103,11 +103,12 @@ window.PORTFOLIO_DOCS["n-one"] = {
             ] },
             { id: "serving", title: { fr: "Serving", en: "Serving" }, nodes: [
                 { id: "vllm", name: "vLLM", tech: "vLLM", note: { fr: "Inférence", en: "Inference" } },
-                { id: "k8s", name: "Kubernetes", tech: "Kubernetes", note: { fr: "24 GPU, autoscaling", en: "24 GPUs, autoscaling" } }
+                { id: "k8s", name: "Kubernetes", tech: "Kubernetes", stack: ["KEDA"], note: { fr: "24 GPU, autoscaling", en: "24 GPUs, autoscaling" } }
             ] },
             { id: "infra", title: { fr: "Stockage et mesures", en: "Storage and metrics" }, nodes: [
                 { id: "oci", name: "Object Storage", tech: "OCI", note: { fr: "Poids des modèles", en: "Model weights" } },
-                { id: "obs", name: "Prometheus · Grafana", tech: "Grafana", note: { fr: "Latence et coût", en: "Latency and cost" } }
+                { id: "obs", name: "Prometheus · Grafana", tech: "Grafana", stack: ["Prometheus", "OpenTelemetry"], note: { fr: "Latence et coût", en: "Latency and cost" } },
+                { id: "hf", name: "Hugging Face", tech: "Hugging Face", note: { fr: "Versions exactes", en: "Pinned versions" } }
             ] }
         ],
         links: [
@@ -116,7 +117,8 @@ window.PORTFOLIO_DOCS["n-one"] = {
             { from: "cat", to: "gw", label: { fr: "règles", en: "rules" }, kind: "control" },
             { from: "ci", to: "k8s", label: { fr: "déploie", en: "deploys" }, kind: "control" },
             { from: "oci", to: "vllm", label: { fr: "poids", en: "weights" }, kind: "data" },
-            { from: "vllm", to: "obs", label: { fr: "métriques", en: "metrics" }, kind: "monitor" }
+            { from: "vllm", to: "obs", label: { fr: "métriques", en: "metrics" }, kind: "monitor" },
+            { from: "hf", to: "oci", label: { fr: "import + contrôles", en: "import + checks" }, kind: "data" }
         ]
     },
     decisions: [
@@ -217,7 +219,8 @@ window.PORTFOLIO_DOCS["ocp"] = {
             { from: "raw", to: "dbx", label: { fr: "lecture", en: "read" }, kind: "data" },
             { from: "dbx", to: "clean", label: { fr: "écriture Delta", en: "Delta write" }, kind: "data" },
             { from: "airflow", to: "adf", label: { fr: "planifie", en: "schedules" }, kind: "control" },
-            { from: "airflow", to: "dbt", label: { fr: "lance", en: "runs" }, kind: "control" }
+            { from: "airflow", to: "dbt", label: { fr: "lance", en: "runs" }, kind: "control" },
+            { from: "clean", to: "dbt", label: { fr: "modèles", en: "models" }, kind: "data" }
         ]
     },
     decisions: [

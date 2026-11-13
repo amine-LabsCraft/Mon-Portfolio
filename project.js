@@ -1,7 +1,7 @@
 /* Page d'étude de cas : affiche le projet passé dans ?id=… */
 (() => {
     const { t, pick } = window.i18n;
-    const { escapeHtml, techChip, techIcon, architecture, projectTitle, formatDate, orderedProjects, capToNaturalSize } = window.portfolio;
+    const { escapeHtml, techChip, architecture, projectTitle, formatDate, orderedProjects, capToNaturalSize } = window.portfolio;
     /* experience.html réutilise cette page pour les stages (data/internships.js). */
     const isExperience = document.body.dataset.collection === "experiences";
     const projects = isExperience ? window.PORTFOLIO_INTERNSHIPS : window.PORTFOLIO_PROJECTS;
@@ -48,34 +48,30 @@
             </li>`).join("")}</ol>`;
     }
 
-    /* Carte d'architecture : zones et composants en HTML, liaisons dessinées en SVG par drawMap(). */
-    function systemMap(doc) {
-        const { zones, links } = doc.map;
-        const nodeName = Object.fromEntries(zones.flatMap((z) => z.nodes.map((n) => [n.id, nodeLabel(n.name)])));
+    /* Schéma d'architecture : le canevas est dessiné par diagram.js une fois la page affichée (mountMap). */
+    function systemMap(map) {
+        const nodeName = Object.fromEntries(map.zones.flatMap((z) => z.nodes.map((n) => [n.id, nodeLabel(n.name)])));
         return `
-            <div class="sysmap" style="--zones:${zones.length}">
-                <svg class="sysmap-links" aria-hidden="true"></svg>
-                <div class="sysmap-labels" aria-hidden="true"></div>
-                ${zones.map((zone) => `
-                    <section class="zone" aria-label="${escapeHtml(pick(zone.title))}">
-                        <h3>${escapeHtml(pick(zone.title))}</h3>
-                        ${zone.nodes.map((node) => `
-                            <div class="sysnode" data-node="${node.id}" tabindex="0">
-                                ${techIcon(node.tech || node.name)}
-                                <span><strong>${escapeHtml(nodeLabel(node.name))}</strong>${node.note ? `<small>${escapeHtml(pick(node.note))}</small>` : ""}</span>
-                            </div>`).join("")}
-                    </section>`).join("")}
-            </div>
-            <div class="legend" aria-hidden="true">
+            <div class="flow" tabindex="0" role="group" aria-label="${escapeHtml(t("p.arch"))}"></div>
+            <div class="legend">
                 <span class="lg-data">${t("p.legend.data")}</span>
                 <span class="lg-control">${t("p.legend.control")}</span>
                 <span class="lg-monitor">${t("p.legend.monitor")}</span>
                 <span class="lg-hint">${t("p.arch.hint")}</span>
             </div>
-            <details class="links-list"${matchMedia("(max-width: 900px)").matches ? " open" : ""}>
+            ${map.stack?.length ? `<div class="flow-base"><span>${t("p.arch.base")}</span><ul class="stack">${map.stack.map(techChip).join("")}</ul></div>` : ""}
+            <details class="links-list">
                 <summary>${t("p.links")}</summary>
-                <ul>${links.map((l) => `<li><strong>${escapeHtml(nodeName[l.from])}</strong> → <strong>${escapeHtml(nodeName[l.to])}</strong> : ${escapeHtml(pick(l.label))}</li>`).join("")}</ul>
+                <ul>${map.links.map((l) => `<li><strong>${escapeHtml(nodeName[l.from])}</strong> → <strong>${escapeHtml(nodeName[l.to])}</strong>${pick(l.label) ? ` : ${escapeHtml(pick(l.label))}` : ""}</li>`).join("")}</ul>
             </details>`;
+    }
+
+    /* Carte du projet : celle de data/docs.js, sinon une carte déduite de la vue pipeline. */
+    function mapOf(project) {
+        const doc = docs[project.id];
+        if (doc?.map) return doc.map;
+        const arch = window.PORTFOLIO_ARCHITECTURES?.[project.id];
+        return arch ? window.portfolioDiagram.fromPipeline(arch, pick) : null;
     }
 
     function decisions(doc) {
@@ -87,75 +83,15 @@
             </article>`).join("")}</div>`;
     }
 
-    /* ---------- Dessin des liaisons ---------- */
+    /* ---------- Schéma interactif ---------- */
 
-    function drawMap() {
-        const map = main.querySelector(".sysmap");
-        const doc = docs[id];
-        if (!map || !doc || archView !== "map") return;
-        const svg = map.querySelector(".sysmap-links");
-        const labels = map.querySelector(".sysmap-labels");
-        const box = map.getBoundingClientRect();
-        svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
-        svg.setAttribute("width", box.width);
-        svg.setAttribute("height", box.height);
-        const rect = (nodeId) => {
-            const r = map.querySelector(`[data-node="${nodeId}"]`).getBoundingClientRect();
-            return { x: r.left - box.left, y: r.top - box.top, w: r.width, h: r.height, cx: r.left - box.left + r.width / 2, cy: r.top - box.top + r.height / 2 };
-        };
-        const placed = [];
-        const nodes = [...map.querySelectorAll(".sysnode")].map((el) => rect(el.dataset.node));
-        let paths = "";
-        let tags = "";
-        doc.map.links.forEach((link, i) => {
-            const a = rect(link.from);
-            const b = rect(link.to);
-            const dx = b.cx - a.cx;
-            const dy = b.cy - a.cy;
-            let s, e, c1, c2;
-            if (Math.abs(dx) > Math.abs(dy) * 0.6 && Math.abs(dx) > (a.w + b.w) / 2) {
-                const dir = Math.sign(dx);
-                s = { x: dir > 0 ? a.x + a.w : a.x, y: a.cy };
-                e = { x: dir > 0 ? b.x : b.x + b.w, y: b.cy };
-                const k = Math.max(30, Math.abs(e.x - s.x) / 2) * dir;
-                c1 = { x: s.x + k, y: s.y }; c2 = { x: e.x - k, y: e.y };
-            } else {
-                const dir = Math.sign(dy) || 1;
-                s = { x: a.cx, y: dir > 0 ? a.y + a.h : a.y };
-                e = { x: b.cx, y: dir > 0 ? b.y : b.y + b.h };
-                const k = Math.max(20, Math.abs(e.y - s.y) / 2) * dir;
-                c1 = { x: s.x, y: s.y + k }; c2 = { x: e.x, y: e.y - k };
-            }
-            paths += `<path class="link link-${link.kind}" data-from="${link.from}" data-to="${link.to}" d="M${s.x},${s.y} C${c1.x},${c1.y} ${c2.x},${c2.y} ${e.x},${e.y}" marker-end="url(#arrow-${link.kind})"/>`;
-            /* Étiquette au milieu de la courbe, décalée jusqu'à ne recouvrir ni un composant ni une autre étiquette. */
-            const mid = { x: (s.x + 3 * c1.x + 3 * c2.x + e.x) / 8, y: (s.y + 3 * c1.y + 3 * c2.y + e.y) / 8 };
-            const w = pick(link.label).length * 6.6 + 18;
-            const h = 20;
-            /* Encombrement d'une position : une autre étiquette compte double, un composant simple, l'éloignement un peu. */
-            const cost = (x, y) =>
-                nodes.filter((n) => x + w / 2 > n.x - 4 && x - w / 2 < n.x + n.w + 4 && y + h / 2 > n.y - 4 && y - h / 2 < n.y + n.h + 4).length
-                + 2 * placed.filter((p) => Math.abs(p.x - x) < (p.w + w) / 2 + 4 && Math.abs(p.y - y) < h + 2).length
-                + (Math.abs(x - mid.x) + Math.abs(y - mid.y)) / 400;
-            const offsets = [];
-            for (const dy of [0, -24, 24, -48, 48, -72, 72]) for (const dx of [0, -40, 40, -80, 80]) offsets.push([dx, dy]);
-            const [ox, oy] = offsets.reduce((best, o) => (cost(mid.x + o[0], mid.y + o[1]) < cost(mid.x + best[0], mid.y + best[1]) ? o : best));
-            const m = { x: mid.x + ox, y: mid.y + oy, w };
-            placed.push(m);
-            tags += `<span class="link-tag tag-${link.kind}" data-from="${link.from}" data-to="${link.to}" style="left:${m.x}px;top:${m.y}px">${escapeHtml(pick(link.label))}</span>`;
-        });
-        svg.innerHTML = `<defs>${["data", "control", "monitor"].map((k) =>
-            `<marker id="arrow-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="arrow-${k}"/></marker>`).join("")}</defs>${paths}`;
-        labels.innerHTML = tags;
-    }
-
-    function highlight(nodeId) {
-        const map = main.querySelector(".sysmap");
-        if (!map) return;
-        map.classList.toggle("focusing", Boolean(nodeId));
-        map.querySelectorAll("[data-from]").forEach((el) => {
-            el.classList.toggle("on", el.dataset.from === nodeId || el.dataset.to === nodeId);
-        });
-        map.querySelectorAll(".sysnode").forEach((el) => el.classList.toggle("on", el.dataset.node === nodeId));
+    let flow = null;
+    function mountMap(project) {
+        flow?.destroy();
+        flow = null;
+        const el = main.querySelector(".flow");
+        const map = mapOf(project);
+        if (el && map) flow = window.portfolioDiagram.mount(el, map, { pick, name: nodeLabel, t });
     }
 
     /* ---------- Page ---------- */
@@ -180,6 +116,7 @@
         const next = ordered[(index + 1) % ordered.length];
         const repoUrl = project.repo ? `https://github.com/amine-LabsCraft/${encodeURIComponent(project.repo)}` : "";
         const hasPipeline = Boolean(window.PORTFOLIO_ARCHITECTURES?.[project.id]);
+        const map = mapOf(project);
 
         const metrics = (project.metrics || []).map((m) =>
             `<div><dt>${escapeHtml(m.value)}</dt><dd>${escapeHtml(pick(m.label))}</dd></div>`).join("");
@@ -206,12 +143,12 @@
                 ${list(doc.pains).length ? `<h3 class="sub">${t("p.pains")}</h3><ul class="pains">${list(doc.pains).map((p) => `<li>${escapeHtml(p)}</li>`).join("")}</ul>` : ""}`],
             !doc && ["context", t("p.problem"), `<p class="lead-text">${escapeHtml(pick(project.problem))}</p>`],
             doc?.steps?.length ? ["steps", t("p.steps"), steps(doc)] : ["steps", t("p.built"), `<ul class="built">${list(project.built).map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`],
-            (doc?.map || hasPipeline) && ["architecture", t("p.arch"), `
+            map && ["architecture", t("p.arch"), `
                 ${doc?.map && hasPipeline ? `<div class="seg" role="tablist" aria-label="${escapeHtml(t("p.arch"))}">
                     <button type="button" role="tab" data-view="map" aria-selected="${archView === "map"}">${t("p.arch.map")}</button>
                     <button type="button" role="tab" data-view="pipeline" aria-selected="${archView === "pipeline"}">${t("p.arch.pipeline")}</button>
                 </div>` : ""}
-                <div class="arch-panel">${doc?.map && archView === "map" ? systemMap(doc) : architecture(project)}</div>`],
+                ${archView === "map" || !hasPipeline ? `<div class="arch-panel arch-panel-flow">${systemMap(map)}</div>` : `<div class="arch-panel">${architecture(project)}</div>`}`],
             doc?.decisions?.length && ["decisions", t("p.decisions"), decisions(doc)],
             doc && (list(doc.results).length || list(doc.next).length) && ["results", t("p.results"), `
                 <div class="outcomes">
@@ -257,7 +194,7 @@
                 </nav>` : ""}
             </article>`;
 
-        requestAnimationFrame(drawMap);
+        mountMap(project);
         watchToc();
     }
 
@@ -287,14 +224,11 @@
             window.scrollTo(0, scroll);
         }
     });
-    main.addEventListener("mouseover", (event) => highlight(event.target.closest(".sysnode")?.dataset.node));
-    main.addEventListener("mouseleave", () => highlight(null));
-    main.addEventListener("focusin", (event) => highlight(event.target.closest(".sysnode")?.dataset.node));
-    main.addEventListener("focusout", () => highlight(null));
 
     let resizeTimer;
-    window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(drawMap, 120); });
-    document.fonts?.ready.then(drawMap);
+    window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(() => flow?.refit(), 120); });
+    /* Les polices changent la taille des composants : on recalcule le placement une fois chargées. */
+    document.fonts?.ready.then(() => flow?.relayout());
 
     const dialog = document.querySelector("#image-dialog");
     const fullImage = document.querySelector("#image-full");

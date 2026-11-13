@@ -1,7 +1,7 @@
 /*
  * Prépare le déploiement en une commande :
  * 1. reconstruit la base de connaissances de l'assistant (netlify/functions/ask/knowledge.mjs) ;
- * 2. vérifie la qualité de la recherche (tools/eval-rag.mjs, hors ligne) ;
+ * 2. vérifie la qualité de la recherche (tools/eval-rag.mjs, hors ligne) et les schémas (tools/check-diagrams.mjs) ;
  * 3. recrée dist/ avec uniquement les fichiers publiés par le site.
  *
  * Utilisation : node tools/build.mjs
@@ -17,11 +17,12 @@ const DIST = path.join(ROOT, "dist");
 
 execFileSync(process.execPath, [path.join(ROOT, "tools/build-knowledge.mjs")], { stdio: "inherit" });
 execFileSync(process.execPath, [path.join(ROOT, "tools/eval-rag.mjs")], { stdio: "inherit" });
+execFileSync(process.execPath, [path.join(ROOT, "tools/check-diagrams.mjs")], { stdio: "inherit" });
 
 fs.rmSync(DIST, { recursive: true, force: true });
 fs.mkdirSync(path.join(DIST, "images"), { recursive: true });
 
-const files = ["index.html", "project.html", "experience.html", "domain.html", "domain.js", "style.css", "i18n.js", "common.js", "script.js", "project.js", "assistant.js", "favicon.svg", "CV___Amine_AIT ALI .pdf", "images/Mon Image.jpg"];
+const files = ["index.html", "project.html", "experience.html", "domain.html", "domain.js", "style.css", "i18n.js", "common.js", "script.js", "diagram.js", "project.js", "assistant.js", "favicon.svg", "CV___Amine_AIT ALI .pdf", "images/Mon Image.jpg"];
 const folders = ["data", "images/projects", "images/experiences", "images/logos", "images/tech", "images/certs"];
 for (const f of files) fs.copyFileSync(path.join(ROOT, f), path.join(DIST, f));
 for (const d of folders) fs.cpSync(path.join(ROOT, d), path.join(DIST, d), { recursive: true });

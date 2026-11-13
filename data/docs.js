@@ -47,8 +47,9 @@ DOC("spotify-pipeline", {
                 { id: "state", name: "cdc.json", tech: "ADLS Gen2", note: { fr: "Filigrane par table", en: "Watermark per table" } }
             ] },
             { id: "dbx", title: { fr: "Databricks", en: "Databricks" }, nodes: [
-                { id: "silver", name: "Silver", tech: "Auto Loader", note: { fr: "Nettoyage, Delta", en: "Cleaning, Delta" } },
+                { id: "silver", name: "Silver", tech: "Auto Loader", stack: ["PySpark"], note: { fr: "Nettoyage, Delta", en: "Cleaning, Delta" } },
                 { id: "gold", name: "Gold", tech: "Delta Live Tables", note: { fr: "SCD 1 et SCD 2", en: "SCD 1 and SCD 2" } },
+                { id: "jinja", name: "Requêtes d'analyse", tech: "Jinja2", note: { fr: "Jointures fait / dimensions", en: "Fact / dimension joins" } },
                 { id: "uc", name: "Unity Catalog", tech: "Unity Catalog", note: { fr: "spotify_cata", en: "spotify_cata" } }
             ] }
         ],
@@ -60,7 +61,8 @@ DOC("spotify-pipeline", {
             { from: "adf", to: "logic", label: { fr: "fin de run", en: "end of run" }, kind: "monitor" },
             { from: "raw", to: "silver", label: { fr: "Auto Loader", en: "Auto Loader" }, kind: "data" },
             { from: "silver", to: "gold", label: { fr: "Auto CDC", en: "Auto CDC" }, kind: "data" },
-            { from: "uc", to: "gold", label: { fr: "droits", en: "access" }, kind: "control" }
+            { from: "uc", to: "gold", label: { fr: "droits", en: "access" }, kind: "control" },
+            { from: "jinja", to: "gold", label: { fr: "SQL généré", en: "generated SQL" }, kind: "control" }
         ]
     },
     decisions: [
@@ -113,9 +115,9 @@ DOC("lakebase", {
                 { id: "pages", name: "Pageservers", note: { fr: "Pages, branches COW", en: "Pages, COW branches" } },
                 { id: "s3", name: "Stockage objet", tech: "AWS", note: { fr: "S3 / Azure Blob", en: "S3 / Azure Blob" } }
             ] },
-            { id: "lake", title: { fr: "Lakehouse", en: "Lakehouse" }, nodes: [
+            { id: "lake", title: { fr: "Lakehouse Databricks", en: "Databricks lakehouse" }, nodes: [
                 { id: "uc", name: "Unity Catalog", tech: "Unity Catalog", note: { fr: "Gouvernance", en: "Governance" } },
-                { id: "spark", name: "Spark · SQL · BI", tech: "Spark", note: { fr: "Analyse sans ETL", en: "Analytics without ETL" } }
+                { id: "spark", name: "Spark · SQL · BI", tech: "Spark", stack: ["Delta Lake", "Parquet"], note: { fr: "Analyse sans ETL", en: "Analytics without ETL" } }
             ] }
         ],
         links: [
@@ -164,13 +166,16 @@ DOC("walmart-streaming-flow", {
         { title: { fr: "Restituer et superviser", en: "Serve and monitor" }, text: { fr: "Power BI lit le Gold via le SQL Warehouse ; Prometheus, Grafana et Loki suivent chaque étape avec des règles d'alerte.", en: "Power BI reads Gold through the SQL Warehouse; Prometheus, Grafana and Loki track each step with alert rules." }, tech: ["Power BI", "Prometheus", "Grafana"] }
     ],
     map: {
+        stack: ["Docker Compose", "uv"],
         zones: [
             { id: "src", title: { fr: "Source (Docker)", en: "Source (Docker)" }, nodes: [
-                { id: "pulse", name: "Order Pulse", tech: "Flask", note: { fr: "Génère les commandes", en: "Generates orders" } },
+                { id: "pulse", name: "Order Pulse", tech: "Flask", stack: ["Python"], note: { fr: "Génère les commandes", en: "Generates orders" } },
                 { id: "pg", name: "PostgreSQL", tech: "PostgreSQL", note: { fr: "Schéma raw + trigger", en: "raw schema + trigger" } }
             ] },
             { id: "orch", title: { fr: "Orchestration", en: "Orchestration" }, nodes: [
                 { id: "af", name: "Airflow 3", tech: "Airflow", note: { fr: "DAG horaire", en: "Hourly DAG" } },
+                { id: "redis", name: "Redis", tech: "Redis", note: { fr: "File de tâches", en: "Task queue" } },
+                { id: "celery", name: "Workers Celery", tech: "Celery", note: { fr: "CeleryExecutor", en: "CeleryExecutor" } },
                 { id: "dbt", name: "dbt", tech: "dbt", note: { fr: "Modèles + 131 tests", en: "Models + 131 tests" } }
             ] },
             { id: "lake", title: { fr: "Lakehouse Databricks", en: "Databricks lakehouse" }, nodes: [
@@ -180,6 +185,8 @@ DOC("walmart-streaming-flow", {
             ] },
             { id: "use", title: { fr: "Usage & supervision", en: "Use & monitoring" }, nodes: [
                 { id: "bi", name: "Power BI", tech: "Power BI", note: { fr: "KPIs retail", en: "Retail KPIs" } },
+                { id: "prom", name: "Prometheus", tech: "Prometheus", note: { fr: "Exporter maison", en: "Custom exporter" } },
+                { id: "loki", name: "Loki", tech: "Loki", note: { fr: "Logs via Alloy", en: "Logs via Alloy" } },
                 { id: "obs", name: "Grafana", tech: "Grafana", note: { fr: "4 dashboards, alertes", en: "4 dashboards, alerts" } }
             ] }
         ],
@@ -192,7 +199,12 @@ DOC("walmart-streaming-flow", {
             { from: "bronze", to: "silver", label: { fr: "incrémental", en: "incremental" }, kind: "data" },
             { from: "silver", to: "gold", label: { fr: "si tests OK", en: "if tests pass" }, kind: "data" },
             { from: "gold", to: "bi", label: { fr: "SQL Warehouse", en: "SQL Warehouse" }, kind: "data" },
-            { from: "af", to: "obs", label: { fr: "métriques", en: "metrics" }, kind: "monitor" }
+            { from: "af", to: "redis", label: { fr: "tâches", en: "tasks" }, kind: "control" },
+            { from: "redis", to: "celery", label: { fr: "distribue", en: "dispatches" }, kind: "control" },
+            { from: "af", to: "prom", label: { fr: "métriques", en: "metrics" }, kind: "monitor" },
+            { from: "celery", to: "loki", label: { fr: "logs", en: "logs" }, kind: "monitor" },
+            { from: "prom", to: "obs", label: { fr: "séries", en: "series" }, kind: "monitor" },
+            { from: "loki", to: "obs", label: { fr: "logs", en: "logs" }, kind: "monitor" }
         ]
     },
     decisions: [
@@ -233,9 +245,9 @@ DOC("cryptopulse", {
     ],
     map: {
         zones: [
-            { id: "src", title: { fr: "Source", en: "Source" }, nodes: [{ id: "bn", name: "Binance", tech: "Binance", note: { fr: "WebSocket public", en: "Public WebSocket" } }] },
+            { id: "src", title: { fr: "Source", en: "Source" }, nodes: [{ id: "bn", name: "Binance", tech: "Binance", stack: ["WebSocket"], note: { fr: "WebSocket public", en: "Public WebSocket" } }] },
             { id: "proc", title: { fr: "Pipeline Python", en: "Python pipeline" }, nodes: [
-                { id: "ing", name: "Ingestion", tech: "Python", note: { fr: "asyncio", en: "asyncio" } },
+                { id: "ing", name: "Ingestion", tech: "Python", stack: ["asyncio"], note: { fr: "asyncio", en: "asyncio" } },
                 { id: "val", name: "Validation", tech: "Python", note: { fr: "11 codes de rejet", en: "11 reject codes" } },
                 { id: "agg", name: "Agrégation", tech: "Python", note: { fr: "OHLCV / minute", en: "OHLCV / minute" } }
             ] },
@@ -297,7 +309,7 @@ DOC("walmart-lakehouse", {
             { id: "src", title: { fr: "Source", en: "Source" }, nodes: [{ id: "pg", name: "PostgreSQL", tech: "PostgreSQL", note: { fr: "Ventes, produits…", en: "Sales, products…" } }] },
             { id: "lake", title: { fr: "Databricks (Unity Catalog)", en: "Databricks (Unity Catalog)" }, nodes: [
                 { id: "b", name: "Bronze", tech: "Delta Lake", note: { fr: "Brut + lineage", en: "Raw + lineage" } },
-                { id: "s", name: "Silver", tech: "Delta Lake", note: { fr: "SCD1 / SCD2", en: "SCD1 / SCD2" } },
+                { id: "s", name: "Silver", tech: "Delta Lake", stack: ["Spark"], note: { fr: "SCD1 / SCD2", en: "SCD1 / SCD2" } },
                 { id: "g", name: "Gold", tech: "Delta Lake", note: { fr: "fact_sales", en: "fact_sales" } }
             ] },
             { id: "ctrl", title: { fr: "Pilotage", en: "Control" }, nodes: [
@@ -349,6 +361,7 @@ DOC("kafka-hdfs", {
         { title: { fr: "Vérifier", en: "Verify" }, text: { fr: "Kafka UI pour les topics et offsets, NameNode pour les fichiers, YARN pour les ressources.", en: "Kafka UI for topics and offsets, NameNode for files, YARN for resources." }, tech: ["Kafka"] }
     ],
     map: {
+        stack: ["Docker Compose", "AWS EC2"],
         zones: [
             { id: "src", title: { fr: "Production", en: "Production" }, nodes: [
                 { id: "json", name: "hb-data.json", tech: "JSON", note: { fr: "100 000 événements", en: "100,000 events" } },
@@ -361,7 +374,7 @@ DOC("kafka-hdfs", {
             ] },
             { id: "store", title: { fr: "Stockage Hadoop", en: "Hadoop storage" }, nodes: [
                 { id: "cons", name: "Consommateur", tech: "Python", note: { fr: "Python", en: "Python" } },
-                { id: "hdfs", name: "HDFS", tech: "Hadoop", note: { fr: "NameNode + DataNode", en: "NameNode + DataNode" } },
+                { id: "hdfs", name: "HDFS", tech: "Hadoop", stack: ["Hadoop HDFS"], note: { fr: "NameNode + DataNode", en: "NameNode + DataNode" } },
                 { id: "yarn", name: "YARN", tech: "Hadoop", note: { fr: "Ressources", en: "Resources" } }
             ] }
         ],
@@ -412,9 +425,9 @@ DOC("uber-streaming", {
         zones: [
             { id: "app", title: { fr: "Application", en: "Application" }, nodes: [
                 { id: "ui", name: "Book Ride", tech: "Jinja", note: { fr: "Interface web", en: "Web UI" } },
-                { id: "api", name: "FastAPI", tech: "FastAPI", note: { fr: "Faker + JSON", en: "Faker + JSON" } }
+                { id: "api", name: "FastAPI", tech: "FastAPI", stack: ["Python"], note: { fr: "Faker + JSON", en: "Faker + JSON" } }
             ] },
-            { id: "cloud", title: { fr: "Azure", en: "Azure" }, nodes: [{ id: "eh", name: "Event Hubs", tech: "Azure Event Hubs", note: { fr: "Interface Kafka", en: "Kafka interface" } }] },
+            { id: "cloud", title: { fr: "Azure", en: "Azure" }, nodes: [{ id: "eh", name: "Event Hubs", tech: "Azure Event Hubs", stack: ["Kafka protocol"], note: { fr: "Interface Kafka", en: "Kafka interface" } }] },
             { id: "proc", title: { fr: "Traitement", en: "Processing" }, nodes: [{ id: "spark", name: "PySpark", tech: "Spark", note: { fr: "Structured Streaming", en: "Structured Streaming" } }] },
             { id: "model", title: { fr: "Modèle analytique", en: "Analytical model" }, nodes: [
                 { id: "fact", name: "Faits courses", note: { fr: "Une ligne par course", en: "One row per ride" } },
@@ -523,11 +536,11 @@ DOC("synapse-lakehouse", {
         zones: [
             { id: "lake", title: { fr: "Data lake", en: "Data lake" }, nodes: [
                 { id: "raw", name: "Zone brute", tech: "ADLS Gen2", note: { fr: "CSV / JSON", en: "CSV / JSON" } },
-                { id: "enr", name: "Zone enrichie", tech: "ADLS Gen2", note: { fr: "Parquet typé", en: "Typed Parquet" } }
+                { id: "enr", name: "Zone enrichie", tech: "ADLS Gen2", stack: ["Parquet"], note: { fr: "Parquet typé", en: "Typed Parquet" } }
             ] },
-            { id: "syn", title: { fr: "Synapse", en: "Synapse" }, nodes: [
-                { id: "srv", name: "Serverless SQL", tech: "Serverless SQL", note: { fr: "Lecture sur place", en: "In-place reads" } },
-                { id: "ded", name: "Pool dédié", tech: "Dedicated SQL pool", note: { fr: "Tables MPP", en: "MPP tables" } }
+            { id: "syn", title: { fr: "Azure Synapse", en: "Azure Synapse" }, nodes: [
+                { id: "srv", name: "Serverless SQL", tech: "Serverless SQL", stack: ["T-SQL"], note: { fr: "Lecture sur place", en: "In-place reads" } },
+                { id: "ded", name: "Pool dédié", tech: "Dedicated SQL pool", stack: ["PolyBase"], note: { fr: "Tables MPP", en: "MPP tables" } }
             ] },
             { id: "sec", title: { fr: "Sécurité", en: "Security" }, nodes: [{ id: "sas", name: "Jeton SAS", tech: "SAS", note: { fr: "Moindre privilège", en: "Least privilege" } }] }
         ],
@@ -573,8 +586,8 @@ DOC("adf-pipeline", {
     map: {
         zones: [
             { id: "src", title: { fr: "Stockage source", en: "Source storage" }, nodes: [{ id: "in", name: "Conteneur source", tech: "ADLS Gen2", note: { fr: "Fichiers bruts", en: "Raw files" } }] },
-            { id: "adf", title: { fr: "Data Factory", en: "Data Factory" }, nodes: [
-                { id: "meta", name: "Get Metadata", tech: "Data Factory", note: { fr: "Inventaire", en: "Inventory" } },
+            { id: "adf", title: { fr: "Azure Data Factory", en: "Azure Data Factory" }, nodes: [
+                { id: "meta", name: "Get Metadata", tech: "Data Factory", stack: ["Metadata-driven"], note: { fr: "Inventaire", en: "Inventory" } },
                 { id: "each", name: "ForEach", tech: "Data Factory", note: { fr: "Un fichier à la fois", en: "One file at a time" } },
                 { id: "flow", name: "Data Flow", tech: "Data Flow", note: { fr: "Transformations", en: "Transformations" } }
             ] },
@@ -618,6 +631,7 @@ DOC("olist-audit", {
         { title: { fr: "Recommander", en: "Recommend" }, text: { fr: "Synthèse et décisions argumentées pour la marketplace.", en: "Summary and reasoned decisions for the marketplace." }, tech: [] }
     ],
     map: {
+        stack: ["Python"],
         zones: [
             { id: "raw", title: { fr: "Données brutes", en: "Raw data" }, nodes: [{ id: "csv", name: "9 tables Kaggle", note: { fr: "CSV", en: "CSV" } }] },
             { id: "prep", title: { fr: "Préparation", en: "Preparation" }, nodes: [
@@ -626,7 +640,7 @@ DOC("olist-audit", {
             ] },
             { id: "ana", title: { fr: "Analyse", en: "Analysis" }, nodes: [
                 { id: "kpi", name: "indicators.py", tech: "pandas", note: { fr: "KPIs", en: "KPIs" } },
-                { id: "viz", name: "Visualisations", tech: "Matplotlib", note: { fr: "Figures", en: "Figures" } }
+                { id: "viz", name: "Visualisations", tech: "Matplotlib", stack: ["Seaborn"], note: { fr: "Figures", en: "Figures" } }
             ] },
             { id: "out", title: { fr: "Livrable", en: "Deliverable" }, nodes: [{ id: "rep", name: "Rapport", tech: "Jupyter", note: { fr: "Recommandations", en: "Recommendations" } }] }
         ],
@@ -672,6 +686,7 @@ DOC("fraud-telecom", {
         { title: { fr: "Servir en temps réel", en: "Serve in real time" }, text: { fr: "Chaîne Kafka producteur → feature-processor → fraud-scorer, API FastAPI, Prometheus et Alertmanager, 7 services Docker.", en: "Kafka chain producer → feature-processor → fraud-scorer, FastAPI API, Prometheus and Alertmanager, 7 Docker services." }, tech: ["Kafka", "FastAPI", "Docker"] }
     ],
     map: {
+        stack: ["Docker", "pytest"],
         zones: [
             { id: "src", title: { fr: "Événements", en: "Events" }, nodes: [{ id: "prod", name: "cdr-producer", tech: "Python", note: { fr: "Appels, SMS, paiements", en: "Calls, SMS, payments" } }] },
             { id: "stream", title: { fr: "Flux Kafka", en: "Kafka stream" }, nodes: [
@@ -684,8 +699,9 @@ DOC("fraud-telecom", {
                 { id: "gnn", name: "GraphSAGE", tech: "PyTorch", note: { fr: "25 %", en: "25%" } }
             ] },
             { id: "serve", title: { fr: "Service & supervision", en: "Serving & monitoring" }, nodes: [
-                { id: "api", name: "fraud-api", tech: "FastAPI", note: { fr: "Alertes + dashboard", en: "Alerts + dashboard" } },
-                { id: "prom", name: "Prometheus", tech: "Prometheus", note: { fr: "Latence, lag", en: "Latency, lag" } }
+                { id: "api", name: "fraud-api", tech: "FastAPI", stack: ["Pydantic"], note: { fr: "Alertes + dashboard", en: "Alerts + dashboard" } },
+                { id: "prom", name: "Prometheus", tech: "Prometheus", note: { fr: "Latence, lag", en: "Latency, lag" } },
+                { id: "graf", name: "Grafana", tech: "Grafana", note: { fr: "Tableaux de bord", en: "Dashboards" } }
             ] }
         ],
         links: [
@@ -695,7 +711,8 @@ DOC("fraud-telecom", {
             { from: "score", to: "ae", label: { fr: "inférence", en: "inference" }, kind: "control" },
             { from: "score", to: "gnn", label: { fr: "inférence", en: "inference" }, kind: "control" },
             { from: "score", to: "api", label: { fr: "score ≥ seuil", en: "score ≥ threshold" }, kind: "data" },
-            { from: "score", to: "prom", label: { fr: "métriques", en: "metrics" }, kind: "monitor" }
+            { from: "score", to: "prom", label: { fr: "métriques", en: "metrics" }, kind: "monitor" },
+            { from: "prom", to: "graf", label: { fr: "métriques", en: "metrics" }, kind: "monitor" }
         ]
     },
     decisions: [
@@ -733,9 +750,10 @@ DOC("brainscan", {
         { title: { fr: "Industrialiser", en: "Productionise" }, text: { fr: "API FastAPI (7 endpoints, modèle chargé une fois, rate limiting), Docker multi-stage non-root, 17 tests, CI GitHub Actions.", en: "FastAPI API (7 endpoints, model loaded once, rate limiting), multi-stage non-root Docker, 17 tests, GitHub Actions CI." }, tech: ["FastAPI", "Docker", "GitHub Actions"] }
     ],
     map: {
+        stack: ["Python"],
         zones: [
             { id: "user", title: { fr: "Utilisateur", en: "User" }, nodes: [
-                { id: "web", name: "App web", tech: "JavaScript", note: { fr: "Port 3000", en: "Port 3000" } },
+                { id: "web", name: "App web", tech: "JavaScript", stack: ["Chart.js"], note: { fr: "Port 3000", en: "Port 3000" } },
                 { id: "st", name: "Streamlit", tech: "Streamlit", note: { fr: "Alternative", en: "Alternative" } }
             ] },
             { id: "api", title: { fr: "Service (Docker + Nginx)", en: "Service (Docker + Nginx)" }, nodes: [
@@ -745,7 +763,8 @@ DOC("brainscan", {
             ] },
             { id: "train", title: { fr: "Entraînement", en: "Training" }, nodes: [
                 { id: "data", name: "Dataset IRM", note: { fr: "4 classes", en: "4 classes" } },
-                { id: "trainer", name: "Trainer 2 phases", tech: "PyTorch", note: { fr: "Checkpoint .pth", en: ".pth checkpoint" } }
+                { id: "trainer", name: "Trainer 2 phases", tech: "PyTorch", stack: ["Albumentations"], note: { fr: "Checkpoint .pth", en: ".pth checkpoint" } },
+                { id: "ci", name: "CI GitHub Actions", tech: "GitHub Actions", stack: ["pytest"], note: { fr: "lint → test → docker", en: "lint → test → docker" } }
             ] }
         ],
         links: [
@@ -754,7 +773,8 @@ DOC("brainscan", {
             { from: "fast", to: "model", label: { fr: "tenseur", en: "tensor" }, kind: "data" },
             { from: "model", to: "cam", label: { fr: "activations", en: "activations" }, kind: "data" },
             { from: "data", to: "trainer", label: { fr: "70/15/15", en: "70/15/15" }, kind: "data" },
-            { from: "trainer", to: "model", label: { fr: "poids", en: "weights" }, kind: "control" }
+            { from: "trainer", to: "model", label: { fr: "poids", en: "weights" }, kind: "control" },
+            { from: "ci", to: "fast", label: { fr: "image Docker", en: "Docker image" }, kind: "control" }
         ]
     },
     decisions: [
@@ -795,10 +815,10 @@ DOC("powerbi-mcp", {
                 { id: "claude", name: "Claude", tech: "Claude", note: { fr: "Raisonne et choisit l'outil", en: "Reasons, picks the tool" } }
             ] },
             { id: "server", title: { fr: "Serveur MCP", en: "MCP server" }, nodes: [
-                { id: "mcp", name: "server.js", tech: "MCP", note: { fr: "Outils Power BI", en: "Power BI tools" } }
+                { id: "mcp", name: "server.js", tech: "MCP", stack: ["Node.js", "Zod"], note: { fr: "Outils Power BI", en: "Power BI tools" } }
             ] },
             { id: "bi", title: { fr: "Power BI Desktop", en: "Power BI Desktop" }, nodes: [
-                { id: "model", name: "Modèle de données", tech: "Power BI", note: { fr: "Tables, mesures DAX", en: "Tables, DAX measures" } },
+                { id: "model", name: "Modèle de données", tech: "Power BI", stack: ["DAX"], note: { fr: "Tables, mesures DAX", en: "Tables, DAX measures" } },
                 { id: "report", name: "Rapport", tech: "Power BI", note: { fr: "Ventes, annulations", en: "Sales, cancellations" } }
             ] }
         ],
@@ -838,6 +858,7 @@ DOC("ai-data-agent", {
         { title: { fr: "Choisir le bon modèle", en: "Pick the right model" }, text: { fr: "Modèle rapide et économique pour les tâches simples, modèle plus puissant pour le raisonnement complexe.", en: "Fast, cheap model for simple tasks, stronger model for complex reasoning." }, tech: ["OpenAI", "Claude"] }
     ],
     map: {
+        stack: ["Python", "Pydantic"],
         zones: [
             { id: "in", title: { fr: "Entrée", en: "Input" }, nodes: [{ id: "q", name: "Question", note: { fr: "Langage naturel", en: "Plain language" } }] },
             { id: "graph", title: { fr: "Graphe LangGraph", en: "LangGraph graph" }, nodes: [
@@ -847,7 +868,7 @@ DOC("ai-data-agent", {
             ] },
             { id: "res", title: { fr: "Ressources", en: "Resources" }, nodes: [
                 { id: "pg", name: "PostgreSQL", tech: "PostgreSQL", note: { fr: "Schéma réel", en: "Real schema" } },
-                { id: "llm", name: "LLM", tech: "OpenAI", note: { fr: "OpenAI / Claude", en: "OpenAI / Claude" } },
+                { id: "llm", name: "LLM", tech: "OpenAI", stack: ["Claude"], note: { fr: "OpenAI / Claude", en: "OpenAI / Claude" } },
                 { id: "files", name: "Fichiers", note: { fr: "CSV · JSON · Parquet", en: "CSV · JSON · Parquet" } }
             ] }
         ],
@@ -890,6 +911,7 @@ DOC("mcp-rag-server", {
         { title: { fr: "Citer", en: "Cite" }, text: { fr: "rag_get renvoie le passage exact avec doc_id et chunk_id.", en: "rag_get returns the exact passage with doc_id and chunk_id." }, tech: [] }
     ],
     map: {
+        stack: ["Python", "Pydantic"],
         zones: [
             { id: "client", title: { fr: "Client", en: "Client" }, nodes: [{ id: "claude", name: "Claude Desktop", tech: "Claude", note: { fr: "stdio", en: "stdio" } }] },
             { id: "server", title: { fr: "Serveur MCP local", en: "Local MCP server" }, nodes: [
@@ -898,9 +920,9 @@ DOC("mcp-rag-server", {
                 { id: "get", name: "rag_get", tech: "MCP", note: { fr: "Passage exact", en: "Exact passage" } }
             ] },
             { id: "data", title: { fr: "Données locales", en: "Local data" }, nodes: [
-                { id: "sqlite", name: "app.db", tech: "SQLite", note: { fr: "Mode uri=ro", en: "uri=ro mode" } },
+                { id: "sqlite", name: "app.db", tech: "SQLite", stack: ["aiosqlite"], note: { fr: "Mode uri=ro", en: "uri=ro mode" } },
                 { id: "faiss", name: "Index FAISS", tech: "FAISS", note: { fr: "+ métadonnées", en: "+ metadata" } },
-                { id: "emb", name: "Embeddings", tech: "Hugging Face", note: { fr: "all-MiniLM-L6-v2", en: "all-MiniLM-L6-v2" } }
+                { id: "emb", name: "Embeddings", tech: "Hugging Face", stack: ["sentence-transformers"], note: { fr: "all-MiniLM-L6-v2", en: "all-MiniLM-L6-v2" } }
             ] }
         ],
         links: [
@@ -943,10 +965,11 @@ DOC("rag-agentic", {
     ],
     map: {
         zones: [
-            { id: "front", title: { fr: "Frontend", en: "Front end" }, nodes: [{ id: "ui", name: "React + Vite", tech: "React", note: { fr: "Chat, documents", en: "Chat, documents" } }] },
+            { id: "front", title: { fr: "Frontend", en: "Front end" }, nodes: [{ id: "ui", name: "React + Vite", tech: "React", stack: ["TypeScript", "Tailwind"], note: { fr: "Chat, documents", en: "Chat, documents" } }] },
             { id: "back", title: { fr: "Backend", en: "Back end" }, nodes: [
                 { id: "api", name: "FastAPI", tech: "FastAPI", note: { fr: "SSE, ingestion", en: "SSE, ingestion" } },
-                { id: "llm", name: "LLM", tech: "OpenAI", note: { fr: "Endpoint compatible", en: "Compatible endpoint" } }
+                { id: "llm", name: "LLM", tech: "OpenAI", note: { fr: "Endpoint compatible", en: "Compatible endpoint" } },
+                { id: "ls", name: "LangSmith", tech: "LangSmith", note: { fr: "Traces (facultatif)", en: "Traces (optional)" } }
             ] },
             { id: "supa", title: { fr: "Supabase", en: "Supabase" }, nodes: [
                 { id: "auth", name: "Auth", tech: "Supabase", note: { fr: "JWT", en: "JWT" } },
@@ -961,7 +984,8 @@ DOC("rag-agentic", {
             { from: "api", to: "store", label: { fr: "fichiers", en: "files" }, kind: "data" },
             { from: "api", to: "pgv", label: { fr: "vecteurs", en: "vectors" }, kind: "data" },
             { from: "api", to: "llm", label: { fr: "contexte", en: "context" }, kind: "data" },
-            { from: "pgv", to: "ui", label: { fr: "Realtime", en: "Realtime" }, kind: "monitor" }
+            { from: "pgv", to: "ui", label: { fr: "Realtime", en: "Realtime" }, kind: "monitor" },
+            { from: "api", to: "ls", label: { fr: "traces", en: "traces" }, kind: "monitor" }
         ]
     },
     decisions: [
@@ -999,7 +1023,7 @@ DOC("streaming-subtitle", {
             { id: "browser", title: { fr: "Navigateur", en: "Browser" }, nodes: [
                 { id: "mic", name: "Micro", note: { fr: "MediaStream", en: "MediaStream" } },
                 { id: "stt", name: "Web Speech API", note: { fr: "Transcript final", en: "Final transcript" } },
-                { id: "ui", name: "Interface React", tech: "React", note: { fr: "Blocs + latence", en: "Blocks + latency" } }
+                { id: "ui", name: "Interface React", tech: "React", stack: ["TypeScript", "Tailwind"], note: { fr: "Blocs + latence", en: "Blocks + latency" } }
             ] },
             { id: "server", title: { fr: "Serveur Next.js", en: "Next.js server" }, nodes: [{ id: "route", name: "/api route", tech: "Next.js", note: { fr: "Validation + prompt", en: "Validation + prompt" } }] },
             { id: "ext", title: { fr: "Fournisseur", en: "Provider" }, nodes: [{ id: "model", name: "DiffusionGemma", tech: "DiffusionGemma", note: { fr: "Texte uniquement", en: "Text only" } }] }
@@ -1042,6 +1066,7 @@ DOC("customer-support", {
         { title: { fr: "Répondre", en: "Answer" }, text: { fr: "Prompt construit avec le contexte retrouvé ; GPT-3.5 répond en gardant l'historique.", en: "Prompt built with the retrieved context; GPT-3.5 answers while keeping history." }, tech: ["OpenAI"] }
     ],
     map: {
+        stack: ["Python"],
         zones: [
             { id: "kb", title: { fr: "Base de connaissances", en: "Knowledge base" }, nodes: [
                 { id: "ds", name: "FAQ", tech: "Hugging Face", note: { fr: "Dataset", en: "Dataset" } },
@@ -1086,8 +1111,9 @@ DOC("health-analysis", {
         { title: { fr: "Restituer", en: "Present" }, text: { fr: "Tableau coloré par statut, export du rapport et messages d'erreur explicites.", en: "Status-coloured table, report export and explicit error messages." }, tech: ["pandas"] }
     ],
     map: {
+        stack: ["Python"],
         zones: [
-            { id: "ui", title: { fr: "Interface", en: "Interface" }, nodes: [{ id: "st", name: "Streamlit", tech: "Streamlit", note: { fr: "Import + affichage", en: "Import + display" } }] },
+            { id: "ui", title: { fr: "Interface", en: "Interface" }, nodes: [{ id: "st", name: "Streamlit", tech: "Streamlit", stack: ["pandas"], note: { fr: "Import + affichage", en: "Import + display" } }] },
             { id: "chain", title: { fr: "Pipeline LangChain", en: "LangChain pipeline" }, nodes: [
                 { id: "s1", name: "Étape 1", tech: "LangChain", note: { fr: "JSON strict", en: "Strict JSON" } },
                 { id: "s2", name: "Étape 2", tech: "LangChain", note: { fr: "Résumé + plan", en: "Summary + plan" } }
@@ -1129,12 +1155,13 @@ DOC("insightlens", {
     map: {
         zones: [
             { id: "browser", title: { fr: "Navigateur", en: "Browser" }, nodes: [
-                { id: "file", name: "fileManager", tech: "JavaScript", note: { fr: "Parsing", en: "Parsing" } },
+                { id: "file", name: "fileManager", tech: "JavaScript", stack: ["SheetJS"], note: { fr: "Parsing", en: "Parsing" } },
                 { id: "eng", name: "dataEngine", tech: "JavaScript", note: { fr: "Stats, anomalies", en: "Stats, anomalies" } },
-                { id: "chart", name: "chartEngine", tech: "Chart.js", note: { fr: "8 graphiques", en: "8 charts" } }
+                { id: "chart", name: "chartEngine", tech: "Chart.js", note: { fr: "8 graphiques", en: "8 charts" } },
+                { id: "pdf", name: "Export PDF", tech: "jsPDF", note: { fr: "Rapport complet", en: "Full report" } }
             ] },
             { id: "local", title: { fr: "Poste local", en: "Local machine" }, nodes: [
-                { id: "ollama", name: "Ollama", tech: "Ollama", note: { fr: "llama3.2:3b", en: "llama3.2:3b" } },
+                { id: "ollama", name: "Ollama", tech: "Ollama", stack: ["Llama 3.2"], note: { fr: "llama3.2:3b", en: "llama3.2:3b" } },
                 { id: "ls", name: "LocalStorage", note: { fr: "Sessions", en: "Sessions" } }
             ] }
         ],
@@ -1143,7 +1170,8 @@ DOC("insightlens", {
             { from: "eng", to: "chart", label: { fr: "séries", en: "series" }, kind: "data" },
             { from: "eng", to: "ollama", label: { fr: "contexte", en: "context" }, kind: "data" },
             { from: "ollama", to: "eng", label: { fr: "streaming", en: "streaming" }, kind: "data" },
-            { from: "eng", to: "ls", label: { fr: "mémoire", en: "memory" }, kind: "data" }
+            { from: "eng", to: "ls", label: { fr: "mémoire", en: "memory" }, kind: "data" },
+            { from: "chart", to: "pdf", label: { fr: "graphiques", en: "charts" }, kind: "data" }
         ]
     },
     decisions: [
@@ -1167,8 +1195,9 @@ DOC("ai-trader", {
         { title: { fr: "Simuler", en: "Simulate" }, text: { fr: "Copy trading et paper trading sur Polymarket avec règlement automatique des marchés résolus.", en: "Copy trading and Polymarket paper trading with automatic settlement of resolved markets." }, tech: [] }
     ],
     map: {
+        stack: ["Python"],
         zones: [
-            { id: "agents", title: { fr: "Agents", en: "Agents" }, nodes: [{ id: "ag", name: "Agents OpenClaw", note: { fr: "Signaux", en: "Signals" } }] },
+            { id: "agents", title: { fr: "Agents", en: "Agents" }, nodes: [{ id: "ag", name: "Agents OpenClaw", stack: ["AI agents"], note: { fr: "Signaux", en: "Signals" } }] },
             { id: "platform", title: { fr: "Plateforme", en: "Platform" }, nodes: [
                 { id: "api", name: "FastAPI", tech: "FastAPI", note: { fr: "Backend", en: "Back end" } },
                 { id: "ui", name: "React", tech: "React", note: { fr: "Interface", en: "Interface" } }
@@ -1208,11 +1237,11 @@ DOC("perfume-vmax", {
     map: {
         zones: [
             { id: "front", title: { fr: "Navigateur", en: "Browser" }, nodes: [
-                { id: "site", name: "Boutique", tech: "JavaScript", note: { fr: "Zéro dépendance", en: "Zero dependencies" } },
+                { id: "site", name: "Boutique", tech: "JavaScript", stack: ["HTML", "CSS"], note: { fr: "Zéro dépendance", en: "Zero dependencies" } },
                 { id: "quiz", name: "Quiz olfactif", tech: "JavaScript", note: { fr: "7 questions", en: "7 questions" } }
             ] },
             { id: "back", title: { fr: "Serveur", en: "Server" }, nodes: [
-                { id: "api", name: "Express", tech: "Express", note: { fr: "28 routes", en: "28 routes" } },
+                { id: "api", name: "Express", tech: "Express", stack: ["Node.js", "JWT"], note: { fr: "28 routes", en: "28 routes" } },
                 { id: "db", name: "SQLite", tech: "SQLite", note: { fr: "6 tables", en: "6 tables" } }
             ] },
             { id: "ext", title: { fr: "Services externes", en: "External services" }, nodes: [
@@ -1254,7 +1283,7 @@ DOC("data-preprocessing-lab", {
     map: {
         zones: [
             { id: "in", title: { fr: "Entrée", en: "Input" }, nodes: [{ id: "data", name: "Données", note: { fr: "Liste, CSV, collage", en: "List, CSV, paste" } }] },
-            { id: "tool", title: { fr: "Outil (navigateur)", en: "Tool (browser)" }, nodes: [
+            { id: "tool", title: { fr: "Outil (navigateur)", en: "Tool (browser)" }, stack: ["HTML", "CSS"], nodes: [
                 { id: "diag", name: "Diagnostic", tech: "JavaScript", note: { fr: "Recommandation", en: "Recommendation" } },
                 { id: "tr", name: "Transformations", tech: "JavaScript", note: { fr: "9 méthodes", en: "9 methods" } }
             ] },
@@ -1286,7 +1315,7 @@ DOC("burger-queen", {
     ],
     map: {
         zones: [
-            { id: "code", title: { fr: "Code Flutter", en: "Flutter code" }, nodes: [{ id: "app", name: "Application", tech: "Flutter", note: { fr: "Widgets", en: "Widgets" } }, { id: "assets", name: "Assets", note: { fr: "Images", en: "Images" } }] },
+            { id: "code", title: { fr: "Code Flutter", en: "Flutter code" }, nodes: [{ id: "app", name: "Application", tech: "Flutter", stack: ["Dart", "Material 3"], note: { fr: "Widgets", en: "Widgets" } }, { id: "assets", name: "Assets", note: { fr: "Images", en: "Images" } }] },
             { id: "targets", title: { fr: "Plateformes", en: "Platforms" }, nodes: [{ id: "android", name: "Android" }, { id: "ios", name: "iOS" }] }
         ],
         links: [
@@ -1311,8 +1340,8 @@ DOC("medischool", {
     ],
     map: {
         zones: [
-            { id: "ui", title: { fr: "Interface", en: "Interface" }, nodes: [{ id: "tpl", name: "Templates", tech: "Jinja", note: { fr: "Tableau de bord", en: "Dashboard" } }] },
-            { id: "app", title: { fr: "Application", en: "Application" }, nodes: [{ id: "flask", name: "Flask", tech: "Flask", note: { fr: "Blueprints", en: "Blueprints" } }] },
+            { id: "ui", title: { fr: "Interface", en: "Interface" }, nodes: [{ id: "tpl", name: "Templates", tech: "Jinja", stack: ["Jinja2", "HTML"], note: { fr: "Tableau de bord", en: "Dashboard" } }] },
+            { id: "app", title: { fr: "Application", en: "Application" }, nodes: [{ id: "flask", name: "Flask", tech: "Flask", stack: ["Python"], note: { fr: "Blueprints", en: "Blueprints" } }] },
             { id: "db", title: { fr: "Données", en: "Data" }, nodes: [{ id: "mysql", name: "MySQL", tech: "MySQL", note: { fr: "7 tables", en: "7 tables" } }, { id: "log", name: "LOG_ACTIONS", tech: "MySQL", note: { fr: "Traçabilité", en: "Traceability" } }] }
         ],
         links: [
@@ -1334,10 +1363,12 @@ DOC("medischool-desktop", {
     steps: [{ title: { fr: "Construire l'interface", en: "Build the interface" }, text: { fr: "Fenêtres PyQt pour les cours, les quiz et les ressources, stockage SQLite optionnel.", en: "PyQt windows for courses, quizzes and resources, optional SQLite storage." }, tech: ["Qt", "Python", "SQLite"] }],
     map: {
         zones: [
-            { id: "ui", title: { fr: "Bureau", en: "Desktop" }, nodes: [{ id: "qt", name: "PyQt", tech: "Qt", note: { fr: "Interface", en: "Interface" } }] },
+            { id: "ui", title: { fr: "Bureau", en: "Desktop" }, nodes: [{ id: "qt", name: "PyQt", tech: "Qt", stack: ["Python"], note: { fr: "Interface", en: "Interface" } }] },
+            { id: "logic", title: { fr: "Modules", en: "Modules" }, nodes: [{ id: "mods", name: "Modules", tech: "Python", note: { fr: "Cours, quiz, ressources", en: "Courses, quizzes, resources" } }] },
             { id: "data", title: { fr: "Données", en: "Data" }, nodes: [{ id: "db", name: "SQLite", tech: "SQLite", note: { fr: "Local", en: "Local" } }] }
         ],
-        links: [{ from: "qt", to: "db", label: { fr: "lecture / écriture", en: "read / write" }, kind: "data" }]
+        links: [{ from: "qt", to: "mods", label: { fr: "actions", en: "actions" }, kind: "control" },
+            { from: "mods", to: "db", label: { fr: "lecture / écriture", en: "read / write" }, kind: "data" }]
     },
     decisions: [],
     results: { fr: ["Une base d'application d'étude extensible."], en: ["An extensible study app base."] },
@@ -1356,13 +1387,14 @@ DOC("botola-pro", {
     ],
     map: {
         zones: [
-            { id: "ui", title: { fr: "Interface", en: "Interface" }, nodes: [{ id: "web", name: "Pages web", tech: "JavaScript", note: { fr: "Classement", en: "Standings" } }] },
-            { id: "api", title: { fr: "API", en: "API" }, nodes: [{ id: "flask", name: "Flask", tech: "Flask", note: { fr: "REST", en: "REST" } }] },
+            { id: "ui", title: { fr: "Interface", en: "Interface" }, nodes: [{ id: "web", name: "Pages web", tech: "JavaScript", stack: ["HTML"], note: { fr: "Classement", en: "Standings" } }] },
+            { id: "api", title: { fr: "API", en: "API" }, nodes: [{ id: "flask", name: "Flask", tech: "Flask", stack: ["Python"], note: { fr: "REST", en: "REST" } }, { id: "logic", name: "main.py · models", tech: "Python", note: { fr: "Équipes, joueurs, matchs", en: "Teams, players, matches" } }] },
             { id: "db", title: { fr: "Données", en: "Data" }, nodes: [{ id: "sqlite", name: "SQLite", tech: "SQLite", note: { fr: "Championnat", en: "League" } }] }
         ],
         links: [
             { from: "web", to: "flask", label: { fr: "REST", en: "REST" }, kind: "data" },
-            { from: "flask", to: "sqlite", label: { fr: "SQL", en: "SQL" }, kind: "data" }
+            { from: "flask", to: "sqlite", label: { fr: "SQL", en: "SQL" }, kind: "data" },
+            { from: "flask", to: "logic", label: { fr: "règles métier", en: "business rules" }, kind: "control" }
         ]
     },
     decisions: [],
@@ -1372,6 +1404,7 @@ DOC("botola-pro", {
 
 /* Noms de composants à traduire en anglais (les autres noms sont des noms propres). */
 window.PORTFOLIO_DOCS_EN_NAMES = {
+    "Requêtes d'analyse": "Analysis queries", "Workers Celery": "Celery workers",
     "Agents IA": "AI agents", "Parquet bruts": "Raw Parquet", "Stockage objet": "Object storage", "Agrégation": "Aggregation", "Producteur": "Producer",
     "Consommateur": "Consumer", "Faits courses": "Ride facts", "Zone brute": "Raw zone", "Zone enrichie": "Enriched zone",
     "Pool dédié": "Dedicated pool", "Jeton SAS": "SAS token", "Conteneur source": "Source container", "Zone reporting": "Reporting zone",
