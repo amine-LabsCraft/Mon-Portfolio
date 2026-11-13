@@ -67,7 +67,7 @@ The diagram above illustrates the complete RAG pipeline implemented in this proj
 ## 📂 Project Structure
 
 ```text
-RAG_customer_support/
+customer-support-ai/
 │
 ├── customer_RAG.png
 ├── cust_supp.py
@@ -125,8 +125,8 @@ Answer Generation
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/amine-LabsCraft/RAG_customer_support.git
-cd RAG_customer_support
+git clone https://github.com/amine-LabsCraft/customer-support-ai.git
+cd customer-support-ai
 ```
 
 **2. Create a virtual environment**

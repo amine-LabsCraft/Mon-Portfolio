@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/version-3.0.1-22c55e?style=flat-square" alt="Version"/>
   <img src="https://img.shields.io/badge/tests-106%20passed-22c55e?style=flat-square" alt="Tests"/>
   <img src="https://img.shields.io/badge/cloud-0%25-22c55e?style=flat-square" alt="Cloud"/>
-  <img src="https://img.shields.io/badge/license-Enterprise-333?style=flat-square" alt="License"/>
+  <img src="https://img.shields.io/badge/license-MIT-333?style=flat-square" alt="License"/>
   <img src="https://img.shields.io/badge/IA-Ollama-blue?style=flat-square" alt="Ollama"/>
   <img src="https://img.shields.io/badge/architecture-ES6%20natif-yellow?style=flat-square" alt="ES6"/>
 </p>
@@ -99,8 +99,8 @@ La plupart des outils d'analyse de données envoient vos fichiers vers des serve
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/votre-org/insightlens-enterprise.git
-cd insightlens-enterprise
+git clone https://github.com/amine-LabsCraft/insightlens.git
+cd insightlens
 
 # 2. Installer le modèle IA
 ollama pull llama3.2:3b
@@ -127,7 +127,7 @@ python3 -m http.server 8080
 ## 🏗️ Architecture
 
 ```
-insightlens-enterprise/
+insightlens/
 │
 ├── index.html                          # Point d'entrée
 │

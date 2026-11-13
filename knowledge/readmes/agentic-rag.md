@@ -381,7 +381,7 @@ Le modèle peut répondre sans recherche lorsqu’il estime qu’un document n�
 ## Architecture et organisation du code
 
 ```text
-RAG_Agentic/
+agentic-rag/
 ├── frontend/                       # Application React
 │   ├── src/pages/                  # Chat, Documents, Settings
 │   ├── src/components/             # Interface, chat, auth, documents

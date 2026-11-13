@@ -209,8 +209,8 @@ Un dashboard professionnel style **SOC (Security Operations Center)** est intég
 ### 1 — Cloner le dépôt
 
 ```bash
-git clone https://github.com/<votre-pseudo>/mobile-fraud-detection-ai.git
-cd mobile-fraud-detection-ai
+git clone https://github.com/amine-LabsCraft/telecom-fraud-detection.git
+cd telecom-fraud-detection
 ```
 
 ### 2 — Installer les dépendances

@@ -374,8 +374,8 @@ mongosh --version
 ### 9.1 Cloner le dépôt
 
 ```powershell
-git clone https://github.com/amine-LabsCraft/CryptoPulse-ETL.git
-cd CryptoPulse-ETL
+git clone https://github.com/amine-LabsCraft/Streaming-CryptoPulse-ETL.git
+cd Streaming-CryptoPulse-ETL
 ```
 
 ### 9.2 Créer l'environnement
@@ -428,8 +428,8 @@ La portée `Process` limite la modification à la session PowerShell courante.
 ### 10.1 Cloner
 
 ```bash
-git clone https://github.com/amine-LabsCraft/CryptoPulse-ETL.git
-cd CryptoPulse-ETL
+git clone https://github.com/amine-LabsCraft/Streaming-CryptoPulse-ETL.git
+cd Streaming-CryptoPulse-ETL
 ```
 
 ### 10.2 Créer le venv

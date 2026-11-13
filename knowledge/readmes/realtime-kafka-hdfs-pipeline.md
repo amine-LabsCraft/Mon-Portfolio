@@ -355,8 +355,8 @@ N'ouvrir `9092` que si un client Kafka extérieur à l'instance doit accéder au
 ### 4. Récupérer le projet
 
 ```bash
-git clone <URL_DU_DEPOT>
-cd Data-Eng-Kafka-Hadoop
+git clone https://github.com/amine-LabsCraft/realtime-kafka-hdfs-pipeline.git
+cd realtime-kafka-hdfs-pipeline
 ```
 
 ### 5. Préparer les éléments requis

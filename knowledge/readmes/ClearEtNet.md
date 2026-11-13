@@ -225,7 +225,7 @@ Arbre de décision (exemple — données avec outlier) :
 ## 📁 Structure du projet
 
 ```
-data-preprocessing-lab/
+ClearEtNet/
 │
 ├── standardisation_v3.html      # Outil 1 — Standardisation (4 méthodes)
 ├── normalisation_v4.html         # Outil 2 — Normalisation (6 méthodes)
@@ -245,7 +245,8 @@ data-preprocessing-lab/
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/amine-LabsCraft/data-preprocessing-lab.git
+git clone https://github.com/amine-LabsCraft/ClearEtNet.git
+cd ClearEtNet
 
 # Ouvrir un outil dans votre navigateur
 open standardisation_v3.html       # macOS
