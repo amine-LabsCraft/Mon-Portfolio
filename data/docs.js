@@ -612,6 +612,85 @@ DOC("adf-pipeline", {
     next: { fr: ["Paramétrer les règles par une table de configuration.", "Alerter sur les échecs."], en: ["Drive the rules from a configuration table.", "Alert on failures."] }
 });
 
+DOC("ssis-pipelines", {
+    context: {
+        fr: "TP du module Systèmes d'aide à la décision (ENSA Khouribga) : une base opérationnelle SQL Server, GestionDB, contient des produits, des vendeurs, des régions et des commandes. Il faut en tirer des extraits prêts à l'emploi avec SSIS, l'outil ETL de l'écosystème Microsoft.",
+        en: "Lab for the Decision Support Systems course (ENSA Khouribga): an operational SQL Server database, GestionDB, holds products, sellers, regions and orders. The goal is to turn it into ready-to-use extracts with SSIS, the ETL tool of the Microsoft ecosystem."
+    },
+    pains: {
+        fr: ["Les colonnes texte sont en NCHAR : chaque valeur est complétée par des espaces, et une comparaison exacte échoue sans prévenir.", "Merge Join refuse des entrées non triées : il faut penser l'ordre des données avant chaque jointure.", "Une coche verte dans Visual Studio ne prouve pas que le fichier produit est juste."],
+        en: ["Text columns are NCHAR: every value is padded with spaces, and an exact comparison silently fails.", "Merge Join rejects unsorted inputs: data order has to be planned before each join.", "A green tick in Visual Studio does not prove the output file is right."]
+    },
+    solution: { fr: "Un projet SSIS de 5 packages sur une connexion ADO.NET partagée, chacun ajoutant un composant (Sort, Conditional Split, Aggregate, Merge Join), validés contre des requêtes T-SQL.", en: "An SSIS project of 5 packages on a shared ADO.NET connection, each adding one component (Sort, Conditional Split, Aggregate, Merge Join), validated against T-SQL queries." },
+    result: { fr: "7 fichiers produits, identiques aux résultats calculés en SQL, et un dépôt reproductible : base recréée par script, packages aux noms explicites, README illustré.", en: "7 output files matching the SQL-computed results, and a reproducible repository: database rebuilt by script, clearly named packages, illustrated README." },
+    steps: [
+        { title: { fr: "Préparer la source", en: "Prepare the source" }, text: { fr: "GestionDB sur SQL Server Express : 5 tables, 4 clés étrangères, 60 lignes. Un script T-SQL recrée le schéma et les données à l'identique, un autre contrôle la source avant de lancer les packages.", en: "GestionDB on SQL Server Express: 5 tables, 4 foreign keys, 60 rows. One T-SQL script rebuilds the schema and data exactly, another checks the source before running the packages." }, tech: ["SQL Server", "T-SQL"] },
+        { title: { fr: "Connecter une fois", en: "Connect once" }, text: { fr: "Un gestionnaire de connexions de projet ADO.NET (authentification Windows) partagé par les 5 packages : changer de serveur se fait à un seul endroit.", en: "One ADO.NET project connection manager (Windows authentication) shared by the 5 packages: switching servers happens in one place." }, tech: ["ADO.NET", "Visual Studio"] },
+        { title: { fr: "Extraire et trier", en: "Extract and sort" }, text: { fr: "Package 01 : dbo.Produit vers un fichier délimité avec en-tête. Package 02 : Sort sur deux clés, catégorie croissante puis libellé décroissant.", en: "Package 01: dbo.Produit to a delimited file with a header. Package 02: Sort on two keys, category ascending then label descending." }, tech: ["SSIS"] },
+        { title: { fr: "Router par catégorie", en: "Route by category" }, text: { fr: "Package 03 : Conditional Split avec une sortie par catégorie. TRIM(category) est indispensable, car un NCHAR(30) stocke « Informatique » suivi de 18 espaces.", en: "Package 03: Conditional Split with one output per category. TRIM(category) is required, because an NCHAR(30) stores \"Informatique\" followed by 18 spaces." }, tech: ["SSIS"] },
+        { title: { fr: "Agréger", en: "Aggregate" }, text: { fr: "Package 04 : Aggregate, regroupement par catégorie et nombre de produits (4, 3, 3). L'ordre de sortie n'est pas garanti.", en: "Package 04: Aggregate, grouping by category and counting products (4, 3, 3). Output order is not guaranteed." }, tech: ["SSIS"] },
+        { title: { fr: "Joindre vers Excel", en: "Join into Excel" }, text: { fr: "Package 05 : Commande et Vendeur triés puis joints sur emp_id, résultat retrié puis joint à Region sur reg_id, écrit dans une feuille Excel (10 lignes).", en: "Package 05: Commande and Vendeur sorted then joined on emp_id, the result re-sorted then joined to Region on reg_id, written to an Excel sheet (10 rows)." }, tech: ["SSIS", "Excel"] },
+        { title: { fr: "Valider et publier", en: "Validate and publish" }, text: { fr: "Chaque fichier comparé au script des résultats attendus. Le dépôt GitHub renomme les packages, rend les chemins portables et explique chaque Data Flow par un schéma.", en: "Each file compared with the expected-results script. The GitHub repository renames the packages, makes paths portable and explains every Data Flow with a diagram." }, tech: ["T-SQL"] }
+    ],
+    map: {
+        zones: [
+            { id: "src", title: { fr: "GestionDB", en: "GestionDB" }, stack: ["SQL Server", "T-SQL"], nodes: [
+                { id: "prod", name: "dbo.Produit", tech: "SQL Server", note: { fr: "10 produits, NCHAR", en: "10 products, NCHAR" } },
+                { id: "cvr", name: "Commande · Vendeur · Region", tech: "SQL Server", note: { fr: "10 lignes chacune", en: "10 rows each" } }
+            ] },
+            { id: "conn", title: { fr: "Connexion", en: "Connection" }, nodes: [
+                { id: "cm", name: "Connexion de projet", tech: "ADO.NET", note: { fr: "GestionDB.conmgr, 5 packages", en: "GestionDB.conmgr, 5 packages" } }
+            ] },
+            { id: "ssis", title: { fr: "Projet SSIS", en: "SSIS project" }, stack: ["Visual Studio"], nodes: [
+                { id: "p1", name: "01 Extraction", tech: "SSIS", note: { fr: "Source → Flat File", en: "Source → Flat File" } },
+                { id: "p2", name: "02 Sort", tech: "SSIS", note: { fr: "category ↑, prod_name ↓", en: "category ↑, prod_name ↓" } },
+                { id: "p3", name: "03 Conditional Split", tech: "SSIS", note: { fr: "TRIM(category) == …", en: "TRIM(category) == …" } },
+                { id: "p4", name: "04 Aggregate", tech: "SSIS", note: { fr: "COUNT par catégorie", en: "COUNT per category" } },
+                { id: "mj1", name: "05 Merge Join emp_id", tech: "SSIS", stack: ["Sort"], note: { fr: "Commande ⋈ Vendeur", en: "Commande ⋈ Vendeur" } },
+                { id: "mj2", name: "05 Merge Join reg_id", tech: "SSIS", stack: ["Sort"], note: { fr: "… ⋈ Region", en: "… ⋈ Region" } }
+            ] },
+            { id: "out", title: { fr: "Fichiers produits", en: "Output files" }, nodes: [
+                { id: "f1", name: "01_Produits.txt", tech: "Flat File", note: { fr: "En-tête + 10 lignes", en: "Header + 10 rows" } },
+                { id: "f2", name: "Produits triés", tech: "Flat File", note: { fr: "02 · 10 lignes", en: "02 · 10 rows" } },
+                { id: "f3", name: "Un fichier par catégorie", tech: "Flat File", note: { fr: "03 · 4, 3 et 3 lignes", en: "03 · 4, 3 and 3 rows" } },
+                { id: "f4", name: "Comptage par catégorie", tech: "Flat File", note: { fr: "04 · 3 lignes", en: "04 · 3 rows" } },
+                { id: "xl", name: "Classeur Excel", tech: "Excel", note: { fr: "05 · 10 lignes", en: "05 · 10 rows" } }
+            ] }
+        ],
+        links: [
+            { from: "prod", to: "cm", label: { fr: "lecture", en: "read" }, kind: "data" },
+            { from: "cvr", to: "cm", label: { fr: "lecture", en: "read" }, kind: "data" },
+            { from: "cm", to: "p1", label: { fr: "Produit", en: "Produit" }, kind: "data" },
+            { from: "cm", to: "p2", label: { fr: "Produit", en: "Produit" }, kind: "data" },
+            { from: "cm", to: "p3", label: { fr: "Produit", en: "Produit" }, kind: "data" },
+            { from: "cm", to: "p4", label: { fr: "Produit", en: "Produit" }, kind: "data" },
+            { from: "cm", to: "mj1", label: { fr: "Commande, Vendeur", en: "Commande, Vendeur" }, kind: "data" },
+            { from: "cm", to: "mj2", label: { fr: "Region", en: "Region" }, kind: "data" },
+            { from: "mj1", to: "mj2", label: { fr: "trié sur reg_id", en: "sorted on reg_id" }, kind: "data" },
+            { from: "p1", to: "f1", label: { fr: "délimité", en: "delimited" }, kind: "data" },
+            { from: "p2", to: "f2", label: { fr: "sans en-tête", en: "no header" }, kind: "data" },
+            { from: "p3", to: "f3", label: { fr: "une sortie par catégorie", en: "one output per category" }, kind: "data" },
+            { from: "p4", to: "f4", label: { fr: "3 groupes", en: "3 groups" }, kind: "data" },
+            { from: "mj2", to: "xl", label: { fr: "10 lignes", en: "10 rows" }, kind: "data" }
+        ]
+    },
+    decisions: [
+        { choice: { fr: "Un gestionnaire de connexions de projet plutôt qu'une connexion par package", en: "A project connection manager instead of one connection per package" }, why: { fr: "Les 5 packages pointent vers la même définition : un changement de serveur ne touche qu'un fichier, GestionDB.conmgr.", en: "All 5 packages point to the same definition: a server change touches a single file, GestionDB.conmgr." } },
+        { choice: { fr: "TRIM dans l'expression plutôt que modifier la base", en: "TRIM in the expression instead of changing the database" }, why: { fr: "La source reste intacte ; RTRIM dans la requête source ou une colonne NVARCHAR sont les alternatives documentées.", en: "The source stays untouched; RTRIM in the source query or an NVARCHAR column are the documented alternatives." } },
+        { choice: { fr: "Merge Join avec des Sort explicites", en: "Merge Join with explicit Sorts" }, why: { fr: "La jointure par fusion lit deux flux triés en une passe ; trier chaque entrée rend cette exigence visible. Un Lookup éviterait les 4 Sort.", en: "A merge join reads two sorted streams in one pass; sorting each input makes that requirement visible. A Lookup would avoid the 4 Sorts." } },
+        { choice: { fr: "Valider en SQL plutôt qu'à l'œil", en: "Validate with SQL rather than by eye" }, why: { fr: "Un script calcule ce que chaque fichier doit contenir : la comparaison ligne à ligne prouve le résultat.", en: "A script computes what each file should contain: a row-by-row comparison proves the result." } },
+        { choice: { fr: "Noms explicites et chemins portables dans le dépôt", en: "Clear names and portable paths in the repository" }, why: { fr: "Les packages sont numérotés comme leurs fichiers de sortie, et toutes les destinations écrivent dans C:\\SSIS_Pipelines\\output.", en: "Packages are numbered like their output files, and every destination writes to C:\\SSIS_Pipelines\\output." } }
+    ],
+    results: {
+        fr: ["5 packages exécutés sans erreur, 7 fichiers produits identiques aux résultats attendus en SQL.", "Le piège NCHAR identifié et expliqué : sans TRIM, aucune ligne ne sort du Conditional Split.", "Un script T-SQL recrée GestionDB à l'identique, vérifié contre la base d'origine (0 différence)."],
+        en: ["5 packages run without errors, 7 output files identical to the SQL-expected results.", "The NCHAR trap identified and explained: without TRIM, no row leaves the Conditional Split.", "A T-SQL script rebuilds GestionDB exactly, checked against the original database (0 differences)."]
+    },
+    next: {
+        fr: ["Remplacer les chemins par des paramètres de projet (dossier de sortie, serveur).", "Remplacer les deux Merge Join par des Lookup et supprimer les 4 Sort.", "Déployer dans le catalogue SSISDB et charger l'entrepôt DataDW, dont la connexion est déjà prête."],
+        en: ["Replace paths with project parameters (output folder, server).", "Replace both Merge Joins with Lookups and drop the 4 Sorts.", "Deploy to the SSISDB catalog and load the DataDW warehouse, whose connection is already in place."]
+    }
+});
+
 DOC("olist-audit", {
     context: {
         fr: "Olist est une marketplace brésilienne : 99 441 commandes réparties sur 9 tables. Question posée : quelles décisions prendre pour augmenter la satisfaction client ?",
@@ -1404,6 +1483,8 @@ DOC("botola-pro", {
 
 /* Noms de composants à traduire en anglais (les autres noms sont des noms propres). */
 window.PORTFOLIO_DOCS_EN_NAMES = {
+    "Connexion de projet": "Project connection", "Produits triés": "Sorted products", "Un fichier par catégorie": "One file per category",
+    "Comptage par catégorie": "Count per category", "Classeur Excel": "Excel workbook", "01 Extraction": "01 Extract",
     "Requêtes d'analyse": "Analysis queries", "Workers Celery": "Celery workers",
     "Agents IA": "AI agents", "Parquet bruts": "Raw Parquet", "Stockage objet": "Object storage", "Agrégation": "Aggregation", "Producteur": "Producer",
     "Consommateur": "Consumer", "Faits courses": "Ride facts", "Zone brute": "Raw zone", "Zone enrichie": "Enriched zone",

@@ -81,7 +81,10 @@
         "datacamp": "datacamp", "coursera": "coursera", "java": "java", "polars": "polars", "dax": "microsoft-power-bi",
         "microsoft": "microsoft", "meta": "meta-icon", "bigquery": "gcp", "ibm": "ibm", "cisco": "cisco",
         "oracle": "oracle", "nvidia": "nvidia", "apache": "apache", "snowflake": "snowflake-icon",
-        "azure sql": "azure-sql", "logic apps": AZURE, "auto loader": "databricks", "delta live tables": "databricks"
+        "azure sql": "azure-sql", "logic apps": AZURE, "auto loader": "databricks", "delta live tables": "databricks",
+        "sql server": "microsoft-sql-server", "sql server 2022": "microsoft-sql-server", "sql server express": "microsoft-sql-server",
+        "ssis": "microsoft-sql-server", "t-sql": "microsoft-sql-server", "visual studio": "visual-studio",
+        "excel": "microsoft-excel", "ado.net": "microsoft"
     };
 
     function techLogo(name) {

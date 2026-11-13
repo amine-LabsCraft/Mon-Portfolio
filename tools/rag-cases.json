@@ -1,4 +1,7 @@
 [
+  { "q": "Has he used SSIS?", "expect": ["ssis-pipelines"] },
+  { "q": "Quels projets utilisent SQL Server Integration Services ?", "expect": ["ssis-pipelines"] },
+  { "q": "Pourquoi TRIM dans le Conditional Split SSIS ?", "expect": ["ssis-pipelines"] },
   { "q": "Which projects use Kafka?", "expect": ["kafka-hdfs", "uber-streaming", "fraud-telecom"] },
   { "q": "Quels projets utilisent Kafka ?", "expect": ["kafka-hdfs", "uber-streaming", "fraud-telecom"] },
   { "q": "What did he do at N+ONE?", "expect": ["url:experience.html?id=n-one"] },

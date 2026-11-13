@@ -575,6 +575,60 @@ window.PORTFOLIO_PROJECTS = [
         ]
     },
     {
+        id: "ssis-pipelines",
+        group: "data",
+        title: "Microsoft SSIS Pipelines",
+        source: "github",
+        repo: "Microsoft_SSIS_Peplines",
+        categories: ["data"],
+        isNew: true,
+        updated: "2026-11-13",
+        kind: { fr: "ETL SQL Server avec SSIS", en: "SQL Server ETL with SSIS" },
+        tagline: {
+            fr: "Cinq packages SSIS qui lisent une base SQL Server et produisent des fichiers plats et un classeur Excel : extraction, tri, Conditional Split, Aggregate et deux Merge Join en chaîne.",
+            en: "Five SSIS packages that read a SQL Server database and produce flat files and an Excel workbook: extraction, sort, Conditional Split, Aggregate and two chained Merge Joins."
+        },
+        problem: {
+            fr: "Maîtriser l'ETL de l'écosystème Microsoft : à partir d'une base opérationnelle (produits, vendeurs, régions, commandes), produire des extraits triés, filtrés, agrégés et joints, en vérifiant chaque résultat contre une requête SQL.",
+            en: "Master ETL in the Microsoft ecosystem: from an operational database (products, sellers, regions, orders), produce sorted, filtered, aggregated and joined extracts, checking each result against a SQL query."
+        },
+        built: {
+            fr: [
+                "Projet SSIS (Visual Studio, cible SQL Server 2022) en modèle de déploiement Project, avec un gestionnaire de connexions ADO.NET partagé par les 5 packages.",
+                "Package 01 : extraction de dbo.Produit vers un fichier délimité avec ligne d'en-tête.",
+                "Package 02 : Sort sur deux clés, catégorie croissante puis libellé décroissant.",
+                "Package 03 : Conditional Split qui écrit un fichier par catégorie (4, 3 et 3 lignes), avec TRIM pour contourner le remplissage des colonnes NCHAR.",
+                "Package 04 : Aggregate, GROUP BY catégorie et COUNT des produits.",
+                "Package 05 : 3 sources, 4 Sort et 2 Merge Join (emp_id puis reg_id) vers une feuille Excel : quelle région pour quel employé.",
+                "Script T-SQL qui recrée la base source à l'identique et script des résultats attendus pour valider chaque fichier produit."
+            ],
+            en: [
+                "SSIS project (Visual Studio, SQL Server 2022 target) using the Project deployment model, with one ADO.NET connection manager shared by the 5 packages.",
+                "Package 01: extracts dbo.Produit to a delimited file with a header row.",
+                "Package 02: Sort on two keys, category ascending then label descending.",
+                "Package 03: Conditional Split writing one file per category (4, 3 and 3 rows), with TRIM to work around NCHAR padding.",
+                "Package 04: Aggregate, GROUP BY category and COUNT of products.",
+                "Package 05: 3 sources, 4 Sorts and 2 Merge Joins (emp_id then reg_id) into an Excel sheet: which region for which employee.",
+                "T-SQL script that rebuilds the source database exactly, and an expected-results script to validate every output file."
+            ]
+        },
+        metrics: [
+            { value: "5", label: { fr: "packages SSIS", en: "SSIS packages" } },
+            { value: "7", label: { fr: "fichiers produits", en: "output files" } },
+            { value: "2", label: { fr: "Merge Join en chaîne", en: "chained Merge Joins" } },
+            { value: "0", label: { fr: "écart avec le SQL attendu", en: "gaps vs. expected SQL" } }
+        ],
+        stack: ["SSIS", "SQL Server", "T-SQL", "Visual Studio", "ADO.NET", "Excel"],
+        images: [
+            { file: "01-vue-ensemble.webp", caption: { fr: "Vue d'ensemble : une source, cinq packages, sept fichiers", en: "Overview: one source, five packages, seven files" } },
+            { file: "02-merge-join-excel.webp", caption: { fr: "Package 05 : deux Merge Join en chaîne vers Excel", en: "Package 05: two chained Merge Joins into Excel" } },
+            { file: "03-conditional-split.webp", caption: { fr: "Package 03 : un fichier par catégorie avec Conditional Split", en: "Package 03: one file per category with Conditional Split" } },
+            { file: "04-piege-nchar.webp", caption: { fr: "Le piège NCHAR : pourquoi TRIM est obligatoire", en: "The NCHAR trap: why TRIM is required" } },
+            { file: "05-schema-gestiondb.webp", caption: { fr: "Base source GestionDB : 5 tables, 4 clés étrangères", en: "GestionDB source database: 5 tables, 4 foreign keys" } },
+            { file: "06-tri-deux-cles.webp", caption: { fr: "Package 02 : tri sur deux clés, avant et après", en: "Package 02: two-key sort, before and after" } }
+        ]
+    },
+    {
         id: "kafka-hdfs",
         group: "data",
         post: "https://www.linkedin.com/feed/update/urn:li:activity:7500232467652661250/",

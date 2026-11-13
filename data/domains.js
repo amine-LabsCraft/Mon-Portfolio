@@ -51,7 +51,7 @@ window.PORTFOLIO_DOMAINS = [
         skills: [
             "Python", "SQL", "T-SQL", "Spark", "PySpark", "Spark SQL", "Kafka", "Kafka protocol", "ZooKeeper", "Hadoop HDFS", "YARN",
             "Airflow", "Airflow 3", "Celery", "Redis", "dbt", "Delta Lake", "Parquet", "Databricks", "Auto Loader", "Delta Live Tables",
-            "Azure Data Factory", "Data Flow", "Metadata-driven", "Azure Event Hubs", "PostgreSQL", "MySQL", "MongoDB", "SQLite", "Azure SQL",
+            "Azure Data Factory", "Data Flow", "Metadata-driven", "SSIS", "SQL Server", "ADO.NET", "Azure Event Hubs", "PostgreSQL", "MySQL", "MongoDB", "SQLite", "Azure SQL",
             "NoSQL", "asyncio", "aiosqlite", "Snowflake", "Data import", "WebSocket", "REST", "requests", "Jinja2", "Pydantic", "Star schema", "Data warehouse", "Database design",
             "Normalization", "ETL / ELT", "Dimensional modeling", "Data modeling", "Data architecture", "Lakehouse", "PolyBase",
             "Window functions", "Joins", "Aggregations", "Data lifecycle"

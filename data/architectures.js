@@ -133,6 +133,17 @@ window.PORTFOLIO_ARCHITECTURES = {
             { title: { fr: "Supervision", en: "Monitoring" }, items: ["Data Factory"], detail: { fr: "Suivi des exécutions, gestion des erreurs et planification.", en: "Run monitoring, error handling and scheduling." } }
         ]
     },
+    "ssis-pipelines": {
+        stages: [
+            { title: { fr: "Source", en: "Source" }, items: ["SQL Server", "T-SQL"], detail: { fr: "Base GestionDB sur SQL Server Express : produits, vendeurs, régions, commandes.", en: "GestionDB database on SQL Server Express: products, sellers, regions, orders." } },
+            { title: { fr: "Connexion", en: "Connection" }, items: ["ADO.NET"], detail: { fr: "Un gestionnaire de connexions de projet partagé par les 5 packages, authentification Windows.", en: "One project connection manager shared by the 5 packages, Windows authentication." } },
+            { title: { fr: "Transformations", en: "Transformations" }, items: ["SSIS"], detail: { fr: "Sort, Conditional Split, Aggregate et Merge Join dans les Data Flow.", en: "Sort, Conditional Split, Aggregate and Merge Join inside the Data Flows." } },
+            { title: { fr: "Sorties", en: "Outputs" }, items: ["Flat File", "Excel"], detail: { fr: "6 fichiers texte délimités et une feuille Excel.", en: "6 delimited text files and one Excel sheet." } }
+        ],
+        bands: [
+            { title: { fr: "Conception", en: "Design" }, items: ["Visual Studio"], detail: { fr: "Projet SSIS en modèle de déploiement Project, cible SQL Server 2022.", en: "SSIS project using the Project deployment model, SQL Server 2022 target." } }
+        ]
+    },
     "olist-audit": {
         stages: [
             { title: { fr: "Données brutes", en: "Raw data" }, items: ["pandas"], detail: { fr: "9 tables Kaggle : commandes, articles, clients, vendeurs, paiements, avis…", en: "9 Kaggle tables: orders, items, customers, sellers, payments, reviews…" } },
