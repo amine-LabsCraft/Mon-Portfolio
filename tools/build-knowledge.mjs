@@ -195,7 +195,9 @@ for (const d of domains) {
 
 /* 5. Vue d'ensemble du portfolio, toujours fournie au modèle. */
 add({ title: "Portfolio", url: "index.html#projets" },
-    `Le portfolio présente ${projects.length} projets. ` + Object.entries(GROUPS).map(([g, l]) => `${l} : ${projects.filter((p) => p.group === g).map((p) => p.title).join(", ")}`).join(". ") + ".",
+    /* Chaque projet avec ses technologies principales : pour une question « liste », le modèle a de quoi décrire
+       chaque projet sans rien inventer. */
+    `Le portfolio présente ${projects.length} projets (technologies principales entre parenthèses).\n` + Object.entries(GROUPS).map(([g, l]) => `${l} : ${projects.filter((p) => p.group === g).map((p) => `${p.title} (${p.stack.slice(0, 4).join(", ")})`).join(" ; ")}`).join(".\n") + ".",
     { always: true, kind: "overview" });
 
 /* Index BM25 : fréquence des termes par passage et fréquence documentaire. */
